@@ -1,6 +1,11 @@
 import math
 
+e = math.e
+
 # -- DISTRIBUCIÓN EXPONENCIAL --#
+# Convierte números uniformemente distribuidos en el intervalo (0,1) a una
+# distribución exponencial con la media asignada.
+
 def distribucion_exponencial(numeros_uniformes_0_1, media): 
     lamb = 1/media
 
