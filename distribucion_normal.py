@@ -13,8 +13,8 @@ def distribucion_normal(numeros_uniformes_0_1, media, desviacion):
             rnd_2 = numeros_uniformes_0_1[-i - 1]
             
             
-            x_1 = math.sqrt(-2 * math.log(rnd_1, e)) * math.cos(2 * math.pi * rnd_2) * desviacion + media
-            x_2 = math.sqrt(-2 * math.log(rnd_1, e)) * math.sin(2 * math.pi * rnd_2) * desviacion + media
+            x_1 = math.sqrt(-2 * math.log(1-rnd_1, e)) * math.cos(2 * math.pi * rnd_2) * desviacion + media
+            x_2 = math.sqrt(-2 * math.log(1-rnd_1, e)) * math.sin(2 * math.pi * rnd_2) * desviacion + media
 
 
             numeros_distribucion_normal.append(x_1)
