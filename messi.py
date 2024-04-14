@@ -5,9 +5,10 @@ import distribucion_normal
 import distribucion_uniforme
 import generacion_histograma
 import generacion_tablas
+from soporte import mostrar_datos_lista
 
 
-n = 1000
+n = 10 ** 4
 
 numeros_uniformes_0_1 = []
 
@@ -25,6 +26,8 @@ numeros_uniforme = distribucion_uniforme.distribucion_uniforme(numeros_uniformes
 # print(numeros_exponencial)
 
 
-t = generacion_tablas.generate_frequency_table(numeros_normal, 9)
+t = generacion_tablas.generate_frequency_table(numeros_normal, 10)
+# mostrar_datos_lista(numeros_exponencial)
+print(t["Frecuencias"].sum())
 print(t)
-generacion_histograma.full_histogram(numeros_normal, 9)
+generacion_histograma.full_histogram(numeros_normal, 10)

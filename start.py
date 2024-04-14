@@ -10,7 +10,6 @@ n = 1000
 numeros_uniformes_0_1 = []
 
 
-
 # Generar n numeros aleatorios entre 0;1
 for i in range(n):
     numeros_uniformes_0_1.append(random.random())

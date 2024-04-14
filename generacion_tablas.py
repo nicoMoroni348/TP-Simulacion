@@ -1,37 +1,6 @@
 import pandas as pd
 import random
 
-"""
-ESA
-
-def categorize_values(value, classes):
-    for i in range(len(classes)-1):
-        if classes[i] <= value <= classes[i+1]:
-            return classes[i+1]
-        if value < classes[i]:
-            return classes[0]
-
-
-
-classes = [2, 4, 6, 8, 10]
-
-xs = [1, 3, 5, 5, 7, 7, 4, 2, 6, 3, 7, 10, 9, 8, 7, 5, 3, 1, 5, 6, 7]
-categorized_data = [categorize_values(x, classes) for x in xs]
-
-
-frequency_table_df = pd.DataFrame(categorized_data)
-frequency_table_df.columns = ["Value"]
-frequency_table = frequency_table_df["Value"].value_counts().sort_index(ascending=False)
-
-print(frequency_table)
-
-"""
-import distribucion_normal
-
-datos = [round(random.random(),4) for _ in range(1000)]
-
-di = distribucion_normal.distribucion_normal(datos, 5.4, 5)
-
 
 
 def categorize_data(d, classes):
@@ -40,63 +9,62 @@ def categorize_data(d, classes):
             return classes[i+1]
     return classes[0]
 
+
+def get_class_index(d, classes):
+
+    for i in range(len(classes)-1):
+
+        if  classes[i] < d <= classes[i+1]:      #     4 < d <= 8
+            return i+1
+        
+        elif d <= classes[i]:    #  <  4
+            return i
+
+
 def generate_frequency_table(data, k_classes, column_name="frecuencias"):
 
     # Se establecen valores para generar las clases
-    minimo = min(data)
-    maximo = max(data)
+    minimo = round(min(data),4)
+    maximo = round(max(data), 4)
+    # print(f"MAXIMO:  {maximo}")
     rango = maximo-minimo
-    intervalo = rango/k_classes
+    intervalo = round(rango/k_classes, 4)
 
     # Se crean las clases
-    clases = [minimo+intervalo]
-    for i in range(k_classes-1):
-        clases.append(clases[i] + intervalo)
+    clases = [round(minimo+intervalo, 4)]
+    for i in range(k_classes-2):
+        clases.append(round(clases[i] + intervalo, 4))
+    clases.append(maximo)
     
-    # Crear datos categorizados
-    datos_categorizados = [categorize_data(d, clases) for d in data]
+    # Contar Frecuencias
+    contador_frecuencias = [0] * k_classes
+    
 
-    tabla_frecuencias = pd.crosstab(index=datos_categorizados, columns=column_name)
+    for d in data:
+        index = get_class_index(d, clases)
+        if index is not None:
+            contador_frecuencias[index] += 1
+        else:
+            print(d)
+    
+
+
+    clases_bonito = []
+    for i,c in enumerate(clases):
+        if i == 0:
+            first = 0
+        else:
+            first = clases[i-1]
+        b = f"{first}-{round(c,4)}"
+        clases_bonito.append(b)
+
+
+    tabla_frecuencias = pd.DataFrame({
+        "Clases": clases,
+        "Intervalos": clases_bonito,
+        "Frecuencias": contador_frecuencias
+        })
+    
 
     return tabla_frecuencias
-
-
-# t = generate_frequency_table(di, 7)
-# print(t)
-
-
-# # df = pd.DataFrame(datos)
-
-# # print(datos)
-# minimo = min(di)
-# maximo = max(di)
-# rango = maximo-minimo
-# k = 7
-# intervalo = rango/k
-
-
-# clases = [minimo]
-# for i in range(k - 1):
-#     clases.append(clases[i] + intervalo)
-
-# print(clases)
-
-
-# # classes = [0.2, 0.4, 0.6, 0.8, 1]
-
-# # crosstable = pd.crosstab(index=datos, columns="count")
-# categorized_table = pd.crosstab(index=[categorize_data(d, clases) for d in di], columns="count")
-# # categorized_table.columns["Datos", "Frecuencia"]
-
-# print(categorized_table)
-
-
-
-
-
-
-
-
-
-
 
