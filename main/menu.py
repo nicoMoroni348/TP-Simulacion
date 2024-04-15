@@ -17,6 +17,7 @@ while True:
     print("0 - Salir ")
 
     try:
+        
         opc = int(input("\nIngrese su opción: "))
         
         if opc not in [1, 2, 3, 0]:

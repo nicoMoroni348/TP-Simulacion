@@ -45,7 +45,6 @@ numeros_uniforme = distribucion_uniforme.distribucion_uniforme(numeros_uniformes
 
 # print(numeros_exponencial)
 
-
 t = generacion_tablas.generate_frequency_table(numeros_normal, 10)
 # mostrar_datos_lista(numeros_exponencial)
 print(t["Frecuencias"].sum())
