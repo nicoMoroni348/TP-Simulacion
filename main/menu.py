@@ -1,5 +1,10 @@
 import os
+import sys
+
+sys.path.append(os.getcwd())
+
 from soporte import clear_console, wait_for_enter
+import sub_menu_distribucion
 
 
 
@@ -21,18 +26,21 @@ while True:
         elif opc == 1:
             clear_console()
             print("Opción 1")
+            sub_menu_distribucion.menu_uniforme()
             print("\nPresione enter para continuar...")
             wait_for_enter()
         
         elif opc == 2:
             clear_console()
             print("Opción 2")
+            sub_menu_distribucion.menu_normal()
             print("\nPresione enter para continuar...")
             wait_for_enter()
         
         elif opc == 3:
             clear_console()
             print("Opción 3")
+            sub_menu_distribucion.menu_exponencial()
             print("\nPresione enter para continuar...")
             wait_for_enter()
         
