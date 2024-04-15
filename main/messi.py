@@ -1,10 +1,30 @@
+import sys
+import os
+
+
+
+sys.path.append(os.getcwd())  
+
+# print()
+
+# curdir = os.path.dirname(__file__)
+# par_dir = os.path.join(curdir, "..")
+
+
+# # Add the parent directory to the search path
+# sys.path.append(par_dir)
+
+# Now you can import modules from the parent directory
+
+
+
 import random
 import matplotlib.pyplot as plt
-import distribucion_exponencial
-import distribucion_normal
-import distribucion_uniforme
-import generacion_histograma
-import generacion_tablas
+from distribuciones import distribucion_exponencial
+from distribuciones import distribucion_normal
+from distribuciones import distribucion_uniforme
+from representaciones import generacion_histograma
+from representaciones import generacion_tablas
 from soporte import mostrar_datos_lista
 
 
