@@ -27,6 +27,8 @@ def menu_uniforme():
 
     intervalos = seleccionar_intervalos_histograma()
 
+    t = generacion_tablas.generate_frequency_table(numeros_uniformes, intervalos)
+
     while True:
         print("\n-- Opciones Uniforme(A,B) --")
         print("1 - Mostrar serie de números generada")
@@ -49,10 +51,11 @@ def menu_uniforme():
                 generacion_histograma.full_histogram(numeros_uniformes, intervalos)
 
             elif opc_uniforme == 3:
-                print("Tabla de frecuencias:")
+                print("\n Tabla de frecuencias:")
+                print(t)
+                input("\nPresione enter para continuar...")
 
             elif opc_uniforme == 4:
-                t = generacion_tablas.generate_frequency_table(numeros_uniformes, intervalos)
                 # print(t)
                 chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, distribution_type="Uniforme")
                 print("Tabla de chi cuadrado: \n", tabliti)
@@ -80,7 +83,9 @@ def menu_normal():
     numeros_nomrales = distribucion_normal.distribucion_normal(numeros_random, media, desviacion)
 
     intervalos = seleccionar_intervalos_histograma()
-    
+
+    t = generacion_tablas.generate_frequency_table(numeros_nomrales, intervalos)
+
     while True:
         print("\n-- Opciones Distribución Normal --")
         print("1 - Mostrar serie de números generada")
@@ -103,11 +108,11 @@ def menu_normal():
                 generacion_histograma.full_histogram(numeros_nomrales, intervalos)
 
             elif opc_normal == 3:
-                print("Tabla de frecuencias:")
+                print("\n Tabla de frecuencias:")
+                print(t)
+                input("\nPresione enter para continuar...")
                 
             elif opc_normal == 4:
-                t = generacion_tablas.generate_frequency_table(numeros_nomrales, intervalos)
-                # print(t)
                 chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, media, desviacion, distribution_type="Normal")
                 print("Tabla de chi cuadrado: \n", tabliti)
                 print("Chi cuadrado: ", chi_cuadrado)
@@ -133,7 +138,8 @@ def menu_exponencial():
     numeros_exp = distribucion_exponencial.distribucion_exponencial(numeros_random, media)
 
     intervalos = seleccionar_intervalos_histograma()
-    
+
+    t = generacion_tablas.generate_frequency_table(numeros_exp, intervalos)    
     while True:
         print("\n-- Opciones Distribución Exponencial --")
         print("1 - Mostrar serie de números generada")
@@ -156,11 +162,11 @@ def menu_exponencial():
                 generacion_histograma.full_histogram(numeros_exp, intervalos)
 
             elif opc_exponencial == 3:
-                print("Tabla de frecuencias:")
+                print("\n Tabla de frecuencias:")
+                print(t)
+                input("\nPresione enter para continuar...")
 
             elif opc_exponencial == 4:
-                t = generacion_tablas.generate_frequency_table(numeros_exp, intervalos)
-                # print(t)
                 chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, media, desviacion, distribution_type="Exponencial")
                 print("Tabla de chi cuadrado: \n", tabliti)
                 print("Chi cuadrado: ", chi_cuadrado)

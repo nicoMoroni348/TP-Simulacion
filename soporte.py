@@ -16,13 +16,19 @@ def generacion_numeros_uniformes(n):
 
 def mostrar_datos_lista(datos, separador=" | "):
 
-    for i, d in enumerate(datos):
-        if i % 5 == 0:
-            print()
-        print(d, end=separador)
-    
-    print()
-
+    if len(datos) < 20:
+        for i, d in enumerate(datos):
+            if i % 5 == 0:
+                print()
+            print(d, end=separador)
+        print()
+    else:
+        for i, d in enumerate(datos[:10]):
+            print(d, end=separador)
+        print(". . .")
+        for i, d in enumerate(datos[-10:]):
+            print(d, end=separador)
+        print()
     # for data in datos[:10]:
     #     print(data)
     
