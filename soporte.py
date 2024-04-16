@@ -4,7 +4,16 @@ import os
 import time
 
 
+def generacion_numeros_uniformes(n):
+    numeros_uniformes_0_1 = []
+    for i in range(n):
+        numeros_uniformes_0_1.append(random.random())
+    
+    return numeros_uniformes_0_1
+
+
 """ PRINTEO DE DATOS """
+
 def mostrar_datos_lista(datos, separador=" | "):
 
     for i, d in enumerate(datos):

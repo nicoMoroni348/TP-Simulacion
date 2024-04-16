@@ -33,11 +33,6 @@ e = math.e
 # Bins = intervalo de clase
 
 
-
-
-
-
-
 def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_type="Uniforme"):
     # Calcular la frecuencia observada
     freq_observadas = list(frequency_table["Frecuencias"])

@@ -1,10 +1,10 @@
 import os
 import sys
-import random
 from representaciones import generacion_histograma, generacion_tablas 
-sys.path.append(os.getcwd())
 from distribuciones import distribucion_exponencial, distribucion_normal, distribucion_uniforme
-# from chi_cuadrado import chi_square_calc
+from chi_cuadrado import prueba_chi_cuadrado
+from soporte import generacion_numeros_uniformes
+sys.path.append(os.getcwd())
 
 """
 
@@ -15,16 +15,18 @@ Y despues solicitar si se quiere generar historgrama, tabla de freq, o hacer la 
 """
 
 
-def menu_uniforme(n):
-    numeros_uniformes_0_1 = []
-    for i in range(n):
-        numeros_uniformes_0_1.append(random.random())
+def menu_uniforme():
+    n = int(input("Ingrese el valor de la muestra: "))
+    a = float(input("Ingrese el valor inferior del intervalo: "))
+    b = float(input("Ingrese el valor superior del intervalo: ")) 
+    numeros_random = generacion_numeros_uniformes(n)
+    numeros_uniformes = distribucion_uniforme.distribucion_uniforme(numeros_random, a, b)
+    intervalos = int(input("Ingrese el número de intervalos para el histograma: "))
 
     while True:
         print("\n-- Opciones Uniforme(A,B) --")
         print("1 - Mostrar histograma")
-        print("2 - Mostrar tabla de frecuencias")
-        print("3 - Realizar prueba de chi cuadrado")
+        print("2 - Realizar prueba de chi cuadrado")
         print("0 - Volver al menú principal")
         
         try:
@@ -34,20 +36,18 @@ def menu_uniforme(n):
                 print("\nIngrese un valor dentro de las opciones...")
             
             elif opc_uniforme == 1:
-
-                intervalos = int(input("Ingrese el número de intervalos para el histograma: "))
+                generacion_histograma.full_histogram(numeros_uniformes, intervalos)
                 # Llamar a la función para mostrar el histograma
-                pass
 
             elif opc_uniforme == 2:
-                pass
-                
-            elif opc_uniforme == 3:
-                a_min = float(input("Ingrese el valor mínimo del intervalo: "))
-                a_max = float(input("Ingrese el valor máximo del intervalo: "))
-                # Llamar a la función para realizar la prueba de chi cuadrado
-                pass
-                
+                t = generacion_tablas.generate_frequency_table(numeros_uniformes, intervalos)
+                # print(t)
+                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, distribution_type="Uniforme")
+                print("Tabla de chi cuadrado: \n", tabliti)
+                print("Chi cuadrado: ", chi_cuadrado)
+                input("\nPresione enter para continuar...")
+
+
             elif opc_uniforme == 0:  
                 break
         
@@ -55,9 +55,13 @@ def menu_uniforme(n):
             print("Opción no válida. Por favor ingrese un número entero.")
 
 
-
-
 def menu_normal():
+    n = int(input("Ingrese el valor de la muestra: "))
+    numeros_random = generacion_numeros_uniformes(n)
+    media = float(input("Ingrese el valor de la media: "))
+    desviacion = float(input("Ingrese el valor de la desviación: "))
+    numeros_nomrales = distribucion_normal.distribucion_normal(numeros_random, media, desviacion)
+    intervalos = int(input("Ingrese el número de intervalos para el histograma: "))
     while True:
         print("\n-- Opciones Distribución Normal --")
         print("1 - Mostrar histograma")
@@ -71,13 +75,17 @@ def menu_normal():
                 print("\nIngrese un valor dentro de las opciones...")
             
             elif opc_normal == 1:
-                intervalos = int(input("Ingrese el número de intervalos para el histograma: "))
                 # Llamar a la función para mostrar el histograma
-                pass
+                generacion_histograma.full_histogram(numeros_nomrales, intervalos)
                 
             elif opc_normal == 2:
-                # Llamar a la función para realizar la prueba de chi cuadrado
-                pass
+                t = generacion_tablas.generate_frequency_table(numeros_nomrales, intervalos)
+                # print(t)
+                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, media, desviacion, distribution_type="Normal")
+                print("Tabla de chi cuadrado: \n", tabliti)
+                print("Chi cuadrado: ", chi_cuadrado)
+                
+                input("\nPresione enter para continuar...")
                 
             elif opc_normal == 0:
                 break
@@ -88,12 +96,10 @@ def menu_normal():
 
 def menu_exponencial():
     n = int(input("Ingrese el valor de la muestra: "))
-    numeros_uniformes_0_1 = []
-    for i in range(n):
-        numeros_uniformes_0_1.append(random.random())
+    numeros_random = generacion_numeros_uniformes(n)
     media = float(input("Ingrese el valor de la media: "))
     desviacion = float(input("Ingrese el valor de la desviación: "))
-    numeros_exp = distribucion_exponencial.distribucion_exponencial(numeros_uniformes_0_1, media)
+    numeros_exp = distribucion_exponencial.distribucion_exponencial(numeros_random, media)
     intervalos = int(input("Ingrese el número de intervalos para el histograma: "))
     while True:
         print("\n-- Opciones Distribución Exponencial --")
@@ -110,14 +116,16 @@ def menu_exponencial():
             elif opc_exponencial == 1:
                 # Llamar a la función para mostrar el histograma
                 generacion_histograma.full_histogram(numeros_exp, intervalos)
-                pass
 
             elif opc_exponencial == 2:
                 # Llamar a la función para realizar la prueba de chi cuadrado
                 t = generacion_tablas.generate_frequency_table(numeros_exp, intervalos)
-                print(t)
-                # chi_square_calc(t, media, desviacion, distribution_type="Exponencial")
-                pass
+                # print(t)
+                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, media, desviacion, distribution_type="Exponencial")
+                print("Tabla de chi cuadrado: \n", tabliti)
+                print("Chi cuadrado: ", chi_cuadrado)
+                input("\nPresione enter para continuar...")
+
                 
             elif opc_exponencial == 0:
                 break
