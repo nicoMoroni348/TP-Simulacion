@@ -22,6 +22,7 @@ while True:
         
         if opc not in [1, 2, 3, 0]:
             print("\nIngrese un valor dentro de las opciones...")
+            print("\nPresione enter para continuar...")
             wait_for_enter()
         
         elif opc == 1:
