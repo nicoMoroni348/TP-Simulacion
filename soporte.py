@@ -162,10 +162,15 @@ def validar_intervalo_a_b():
         try:
             a = float(input("Ingrese el valor inferior del intervalo (A): "))
             b = float(input("Ingrese el valor superior del intervalo (B): "))
-            if a < b:
-                return a, b
+            
+            if a == 0 and b == 1:
+                print("El valor de a y b no puede ser 0 y 1 respectivamente. Por favor ingrese nuevamente los valores.")
             else:
-                print("El valor de 'A' debe ser menor que el valor de 'B'. Por favor ingrese nuevamente los valores.")
+                if a < b:
+                    return a, b
+                else:
+                    print("El valor de 'A' debe ser menor que el valor de 'B'. Por favor ingrese nuevamente los valores.")
+                    
         except ValueError:
             print("Por favor ingrese valores numéricos válidos.")
 
