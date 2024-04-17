@@ -3,7 +3,7 @@ import sys
 from representaciones import generacion_histograma, generacion_tablas 
 from distribuciones import distribucion_exponencial, distribucion_normal, distribucion_uniforme
 from chi_cuadrado import prueba_chi_cuadrado
-from soporte import generacion_numeros_uniformes, validar_muestra, validar_intervalo_a_b, mostrar_datos_lista, seleccionar_intervalos_histograma, validar_media, validar_desviacion_estandar
+from soporte import generacion_numeros_uniformes, validar_muestra, validar_intervalo_a_b, mostrar_datos_lista, seleccionar_intervalos_histograma, validar_media
 sys.path.append(os.getcwd())
 
 """
@@ -22,21 +22,21 @@ def menu_uniforme():
     numeros_uniformes = distribucion_uniforme.distribucion_uniforme(numeros_random, a, b)
     intervalos = seleccionar_intervalos_histograma()
     t = generacion_tablas.generate_frequency_table(numeros_uniformes, intervalos)
+    
     while True:
-
 
         print("\n-- Opciones Uniforme(A,B) --")
         print("1 - Mostrar serie de números generada")
         print("2 - Mostrar histograma")
         print("3 - Mostrar tabla de frecuencias")
         print("4 - Realizar prueba de chi cuadrado")
-        print("5 - Ingresar nuevo numeros de intervalos")  # Nueva opción
+        print("5 - Ingresar nuevo numeros de intervalos")  
         print("0 - Volver al menú principal")
 
         try:
             opc_uniforme = int(input("\nIngrese su opción: "))
 
-            if opc_uniforme not in [0, 1, 2, 3, 4, 5]:  # Actualizamos las opciones válidas
+            if opc_uniforme not in [0, 1, 2, 3, 4, 5]:  
                 print("\nIngrese un valor dentro de las opciones...")
 
             elif opc_uniforme == 1:
@@ -62,8 +62,8 @@ def menu_uniforme():
                     t = generacion_tablas.generate_frequency_table(numeros_uniformes, intervalos)
 
             elif opc_uniforme == 0:
-                return  # Si el usuario elige volver al menú principal, salimos de la función
-
+                return  
+            
         except ValueError:
             print("Opción no válida. Por favor ingrese un número entero.")
 
@@ -130,11 +130,8 @@ def menu_normal():
 
     numeros_random = generacion_numeros_uniformes(n)
 
-    # media = float(input("Ingrese el valor de la media: "))
-    media = validar_media()
-    # desviacion = float(input("Ingrese el valor de la desviación: "))
-    desviacion = validar_desviacion_estandar(media)
-
+    media = float(input("Ingrese el valor de la media: "))
+    desviacion = float(input("Ingrese el valor de la desviación: "))
 
     numeros_nomrales = distribucion_normal.distribucion_normal(numeros_random, media, desviacion)
 
@@ -195,8 +192,6 @@ def menu_exponencial():
     numeros_random = generacion_numeros_uniformes(n)
 
     media = validar_media()
-
-    # desviacion = float(input("Ingrese el valor de la desviación: "))
 
     numeros_exp = distribucion_exponencial.distribucion_exponencial(numeros_random, media)
 

@@ -192,16 +192,3 @@ def validar_media():
                 print("La media debe ser un número positivo. Inténtelo de nuevo.")
         except ValueError:
             print("Ingrese un valor numérico para la media.")
-
-
-def validar_desviacion_estandar(media):
-    while True:
-        try:
-            desviacion = float(input("Ingrese el valor de la desviación estándar: "))
-            if desviacion > 0 and desviacion < media:
-                return desviacion
-            else:
-                print("La desviación estándar debe ser un número positivo y menor que la media. Inténtelo de nuevo.")
-        except ValueError:
-            print("Ingrese un valor numérico para la desviación estándar.")
-

@@ -9,7 +9,7 @@ import sub_menu_distribucion
 
 
 while True:
-    # clear_console()
+    clear_console()
     print("\n-- Opciones --")
     print("1 - Distribución uniforme(A,B)")
     print("2 - Distribución normal")
@@ -27,33 +27,36 @@ while True:
         
         elif opc == 1:
             clear_console()
-            print("Opción 1")
+            print(" -- Distribución Uniforme --")
             sub_menu_distribucion.menu_uniforme()
             print("\nPresione enter para continuar...")
             wait_for_enter()
+            clear_console()
         
         elif opc == 2:
             clear_console()
-            print("Opción 2")
+            print(" -- Distribución Normal --")
             sub_menu_distribucion.menu_normal()
             print("\nPresione enter para continuar...")
             wait_for_enter()
+            clear_console()
         
         elif opc == 3:
             clear_console()
-            print("Opción 3")
+            print(" -- Distribución Exponencial --")
             sub_menu_distribucion.menu_exponencial()
             print("\nPresione enter para continuar...")
             wait_for_enter()
+            clear_console()
         
         elif opc == 0:
             clear_console()
             print("Gracias por utilizar el código")
             print("\nPresione enter para finalizar...")
             wait_for_enter()
+            clear_console()
             break
     
     except ValueError:
-        print(opc)
         print("Opción no válida. Por favor ingrese un número entero.")
         wait_for_enter()
