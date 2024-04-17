@@ -9,7 +9,7 @@ def generacion_numeros_uniformes(n):
     for _ in range(n):
         r = round(random.random(), 4)
         if r == 1.0:
-            r = 0.9999
+            r = 0.9999 # Redondeo "manual"
         numeros_uniformes_0_1.append(r)
     
     return numeros_uniformes_0_1
@@ -32,15 +32,9 @@ def mostrar_datos_lista(datos, separador=" | "):
         for i, d in enumerate(datos[-10:]):
             print(d, end=separador)
         print()
-    # for data in datos[:10]:
-    #     print(data)
-    
-    # print(". . .")
-    # for data in datos[-10:]:
-    #     print(data)
 
 
-
+""" FUNCIONES PARA EL MENÚ """
 
 if os.name == 'nt':  
     import msvcrt
@@ -67,17 +61,10 @@ def join_elements_in_list(li, index_beg, index_end):
     return l
 
 
-
-
-
-
 def join_classes_in_list(li, index_beg, index_end):
 
     l = li[:index_beg] + [max(li[index_beg:index_end+1])] + li[index_end+1:] 
     return l
-
-
-
 
 
 def find_first_index_to_join(freq_esperadas_list, criteria=5.0):
@@ -102,7 +89,6 @@ def find_first_index_to_join(freq_esperadas_list, criteria=5.0):
     
 
 
-
 def get_new_list_and_indexes_changes(l):
     indexes_changed = []
     indexes = (0, 0)
@@ -119,28 +105,7 @@ def get_new_list_and_indexes_changes(l):
     return new_list, indexes_changed
 
 
-# EJEMPLO DE EXPONENCIAL
-
-# l = [37.97, 20.29, 10.84, 5.79, 3.097, 1.66]
-
-
-# messi = [93.99, 112.78, 131.58, 150.38, 169.18, 187.98]
-
-
-# print(l)
-# l, indexes = get_new_list_and_indexes_changes(l)
-
-# print(l)
-# print(indexes)
-
-# for ib, ie in indexes:
-#     messi = join_classes_in_list(messi, ib, ie)
-
-# print(messi)
-
-
-
-
+""" VALIDACIONES """
 
 def validar_muestra():
     while True:
@@ -170,7 +135,7 @@ def validar_intervalo_a_b():
                     return a, b
                 else:
                     print("El valor de 'A' debe ser menor que el valor de 'B'. Por favor ingrese nuevamente los valores.")
-                    
+
         except ValueError:
             print("Por favor ingrese valores numéricos válidos.")
 
