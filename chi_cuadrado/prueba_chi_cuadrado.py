@@ -1,25 +1,7 @@
 import random
-
-
-""" En el código que proporcionaste, para cada valor d en la lista data, se realizan las siguientes operaciones:
-
-index = int((d - min_val) / interval): Esta línea de código calcula a qué intervalo (o bin) pertenece el valor actual d. 
-Resta el valor mínimo (min_val) de d, divide el resultado por el tamaño del intervalo (interval), y luego convierte el resultado a un entero. 
-Esto da como resultado el índice del intervalo al que pertenece d.
-if index == bins: index -= 1: Esta línea de código maneja el caso en el que d es igual al valor máximo en data. En este caso, el cálculo anterior 
-daría un índice que está fuera del rango de la lista observed_freq, por lo que se reduce el índice en 1 para asegurarse de que caiga dentro del 
-rango correcto.
-observed_freq[index] += 1: Esta línea de código incrementa el conteo en el intervalo correspondiente en la lista observed_freq. Esto efectivamente 
-cuenta cuántos valores en data caen dentro de cada intervalo.
-Estas operaciones se realizan para cada valor en data, lo que permite calcular la frecuencia observada de los valores en cada intervalo. 
-Esto es un paso crucial en la realización de la prueba de Chi cuadrado.
-
-
-"""
 import os
 import sys
 sys.path.append(os.getcwd())
-
 
 from distribuciones import distribucion_normal
 from distribuciones import distribucion_exponencial
@@ -30,8 +12,6 @@ import pandas as pd
 from soporte import get_new_list_and_indexes_changes, join_elements_in_list, join_classes_in_list
 
 e = math.e
-# Bins = intervalo de clase
-
 
 def chi_square_calc(datos, frequency_table, distribution_type="Uniforme"):
     media = round(sum(datos) / len(datos), 4)
