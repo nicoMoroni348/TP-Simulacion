@@ -30,7 +30,7 @@ def menu_uniforme():
         print("2 - Mostrar histograma")
         print("3 - Mostrar tabla de frecuencias")
         print("4 - Realizar prueba de chi cuadrado")
-        print("5 - Ingresar nuevo numeros de intervalos")  
+        print("5 - Ingresar nuevo numeros de intervalos")
         print("0 - Volver al menú principal")
 
         try:
@@ -69,61 +69,7 @@ def menu_uniforme():
 
 
 
-'''
-def menu_uniforme():
-    
-    n = validar_muestra()
 
-    a, b = validar_intervalo_a_b()
-
-    numeros_random = generacion_numeros_uniformes(n)
-
-    numeros_uniformes = distribucion_uniforme.distribucion_uniforme(numeros_random, a, b)
-
-    intervalos = seleccionar_intervalos_histograma()
-
-    t = generacion_tablas.generate_frequency_table(numeros_uniformes, intervalos)
-
-    while True:
-        print("\n-- Opciones Uniforme(A,B) --")
-        print("1 - Mostrar serie de números generada")
-        print("2 - Mostrar histograma")
-        print("3 - Mostrar tabla de frecuencias")
-        print("4 - Realizar prueba de chi cuadrado")
-        print("0 - Volver al menú principal")
-        
-        try:
-            opc_uniforme = int(input("\nIngrese su opción: "))
-            
-            if opc_uniforme not in [0, 1, 2, 3, 4]:
-                print("\nIngrese un valor dentro de las opciones...")
-            
-            elif opc_uniforme == 1:
-                print("Serie de números generada:")
-                mostrar_datos_lista(numeros_uniformes)
-
-            elif opc_uniforme == 2:
-                generacion_histograma.full_histogram(numeros_uniformes, intervalos)
-
-            elif opc_uniforme == 3:
-                print("\n Tabla de frecuencias:")
-                print(t)
-                input("\nPresione enter para continuar...")
-
-            elif opc_uniforme == 4:
-                # print(t)
-                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(numeros_uniformes, t, distribution_type="Uniforme")
-                print("Tabla de chi cuadrado: \n", tabliti)
-                print("Chi cuadrado: ", chi_cuadrado)
-                input("\nPresione enter para continuar...")
-
-            elif opc_uniforme == 0:  
-                break
-        
-        except ValueError:
-            print("Opción no válida. Por favor ingrese un número entero.")
-
-'''
 
 def menu_normal():
     n = validar_muestra()

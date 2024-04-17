@@ -1,4 +1,3 @@
-import random
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,8 +8,6 @@ A partir de un parametro: una lista de valores cualesquiera
 Generar distintos histogramas a partir de una lista (en nuestro caso de valores aleatorios)
 
 """
-
-
 
 def full_histogram(data, bins=10, title="Histograma de Distribucion", xlabel="Intervalos", ylabel="Frecuencia", bin_color="lightgreen", edgecolor="black"):
     """

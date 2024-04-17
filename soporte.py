@@ -1,13 +1,16 @@
 import pandas as pd
 import random
 import os
-import time
 
 
 def generacion_numeros_uniformes(n):
     numeros_uniformes_0_1 = []
     for _ in range(n):
         r = round(random.random(), 4)
+
+
+        # Con el redondeo un 0.99995... se redondea a 1.0
+        # Este codigo evita que random.random() devuelva un 1.0 al redondear
         if r == 1.0:
             r = 0.9999 # Redondeo "manual"
         numeros_uniformes_0_1.append(r)
@@ -68,25 +71,35 @@ def join_classes_in_list(li, index_beg, index_end):
 
 
 def find_first_index_to_join(freq_esperadas_list, criteria=5.0):
+    # Devuelve el primer par de indices a agrupar, segun el criterio
     index_beg = -1
+    # Si index_beg es -1 significa que no encontro todavia el indice de inicio a agrupar
     index_end = -1
     for i, element in (enumerate(freq_esperadas_list)):
         if element < criteria and index_beg == -1:
+            print("IF MENOR")
             index_beg = i
 
+        # Si al agrupar indices consiguientes no llega a 5, no entra a este elif
         elif element < criteria and index_beg != -1 and element + sum(freq_esperadas_list[index_beg:i]) >= criteria:
             index_end = i
+            print("ELIF")
             return (index_beg, index_end)
 
         if element >= criteria and index_beg != -1:
             index_end = i
+            print("IF MAYOR")
             return (index_beg, index_end)
+        
+        print(i, element)
+        input()
             
 
-    
+    # Este if esta por si no se puede agrupar para el siguiente intervalo, que agrupe con el anterior
     if index_beg != -1 and index_end == -1:
-        return (index_beg-1, index_beg)
-    
+        return (index_beg-1, len(freq_esperadas_list)-1)
+
+
 
 
 def get_new_list_and_indexes_changes(l):
@@ -98,6 +111,7 @@ def get_new_list_and_indexes_changes(l):
         if indexes is not None:
             # print(f"CUR STATE: {new_list}  --  JOINING {indexes}")
 
+            # agrega el agrupamiento a realizar en la lista 
             indexes_changed.append(indexes)
             new_list = join_elements_in_list(new_list, *indexes)
             # time.sleep(1)
@@ -110,11 +124,12 @@ def get_new_list_and_indexes_changes(l):
 def validar_muestra():
     while True:
         try:
-            n = int(input("Ingrese el valor de la muestra (hasta 1000000 y mayor que 0): "))
-            if n > 0 and n <= 1000000:
+            
+            n = int(input("Ingrese el valor de la muestra (hasta 1.000.000 y mayor que 30): "))
+            if n > 30 and n <= 1000000:
                 break
             else:
-                print("La muestra debe estar entre 1 y 1000000, por favor ingrese un valor válido.")
+                print("La muestra debe estar entre 30 y 1000000, por favor ingrese un valor válido.")
 
         except ValueError:
             print("Por favor ingrese un número entero válido.")

@@ -8,6 +8,7 @@ def distribucion_exponencial(numeros_uniformes_0_1, media):
 
     numeros_distribucion_exponencial_negativa = []
 
+    # Se usa 1 - rnd para que el argumento del logaritmo nunca sea 0
     for rnd in numeros_uniformes_0_1:
         x = round((-1/lamb) * math.log(1-rnd, e), 4)
         numeros_distribucion_exponencial_negativa.append(x)

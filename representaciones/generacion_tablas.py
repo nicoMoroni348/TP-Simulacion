@@ -3,22 +3,27 @@ import random
 
 
 
-def categorize_data(d, classes):
-    for i in range(len(classes)-1):
-        if classes[i] < d <= classes[i+1]:
-            return classes[i+1]
-    return classes[0]
+# def categorize_data(d, classes):
+#     for i in range(len(classes)-1):
+#         if classes[i] < d <= classes[i+1]:
+#             return classes[i+1]
+#     return classes[0]
 
 
 def get_class_index(d, classes):
 
     for i in range(len(classes)-1):
 
-        if  classes[i] < d <= classes[i+1]:      #     4 < d <= 8
+        # si esta en el siguiente intervalo
+        if  classes[i] < d <= classes[i+1]:      #     2.1 < d <= 3.4
             return i+1
         
+        # En caso de que el valor d este en la actual (sirve para la primer clase)
         elif d <= classes[i]:    #  <  4
             return i
+        
+
+        # Si no esta en el siguiente, ni en el actual, pasa a la siguiente iteracion
 
 
 def generate_frequency_table(data, k_classes, column_name="frecuencias"):
@@ -31,8 +36,10 @@ def generate_frequency_table(data, k_classes, column_name="frecuencias"):
 
     # Se crean las clases
     clases = [round(minimo+intervalo, 4)]
+
     for i in range(k_classes-2):
         clases.append(round(clases[i] + intervalo, 4))
+
     clases.append(maximo)
     
     # Contar Frecuencias
@@ -44,17 +51,18 @@ def generate_frequency_table(data, k_classes, column_name="frecuencias"):
         if index is not None:
             contador_frecuencias[index] += 1
         else:
-            print(d)
+            print("ERROR")
+            return "ERROR"
     
 
 
     clases_bonito = []
-    for i,c in enumerate(clases):
+    for i, c in enumerate(clases):
         if i == 0:
             first = minimo
         else:
             first = clases[i-1]
-        b = f"{first} - {round(c,4)}"
+        b = f"({first}; {round(c,4)})"
         clases_bonito.append(b)
 
 
@@ -66,4 +74,6 @@ def generate_frequency_table(data, k_classes, column_name="frecuencias"):
     
 
     return tabla_frecuencias
+
+
 
