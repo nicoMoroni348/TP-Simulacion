@@ -26,7 +26,6 @@ def generate_frequency_table(data, k_classes, column_name="frecuencias"):
     # Se establecen valores para generar las clases
     minimo = round(min(data),4)
     maximo = round(max(data), 4)
-    # print(f"MAXIMO:  {maximo}")
     rango = maximo-minimo
     intervalo = round(rango/k_classes, 4)
 
@@ -52,10 +51,10 @@ def generate_frequency_table(data, k_classes, column_name="frecuencias"):
     clases_bonito = []
     for i,c in enumerate(clases):
         if i == 0:
-            first = 0
+            first = minimo
         else:
             first = clases[i-1]
-        b = f"{first}-{round(c,4)}"
+        b = f"{first} - {round(c,4)}"
         clases_bonito.append(b)
 
 
