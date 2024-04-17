@@ -77,22 +77,20 @@ def find_first_index_to_join(freq_esperadas_list, criteria=5.0):
     index_end = -1
     for i, element in (enumerate(freq_esperadas_list)):
         if element < criteria and index_beg == -1:
-            print("IF MENOR")
+
             index_beg = i
 
         # Si al agrupar indices consiguientes no llega a 5, no entra a este elif
         elif element < criteria and index_beg != -1 and element + sum(freq_esperadas_list[index_beg:i]) >= criteria:
             index_end = i
-            print("ELIF")
+
             return (index_beg, index_end)
 
         if element >= criteria and index_beg != -1:
             index_end = i
-            print("IF MAYOR")
+
             return (index_beg, index_end)
-        
-        print(i, element)
-        input()
+
             
 
     # Este if esta por si no se puede agrupar para el siguiente intervalo, que agrupe con el anterior
