@@ -6,8 +6,11 @@ import time
 
 def generacion_numeros_uniformes(n):
     numeros_uniformes_0_1 = []
-    for i in range(n):
-        numeros_uniformes_0_1.append(random.random())
+    for _ in range(n):
+        r = round(random.random(), 4)
+        if r == 1.0:
+            r = 0.9999
+        numeros_uniformes_0_1.append(r)
     
     return numeros_uniformes_0_1
 
@@ -62,6 +65,9 @@ def join_elements_in_list(li, index_beg, index_end):
 
     l = li[:index_beg] + [sum(li[index_beg:index_end+1])] + li[index_end+1:] 
     return l
+
+
+
 
 
 

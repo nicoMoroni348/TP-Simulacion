@@ -33,10 +33,12 @@ e = math.e
 # Bins = intervalo de clase
 
 
-def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_type="Uniforme"):
+def chi_square_calc(datos, frequency_table, distribution_type="Uniforme"):
+    media = round(sum(datos) / len(datos), 4)
+    desviacion = 1.0
     # Calcular la frecuencia observada
     freq_observadas = list(frequency_table["Frecuencias"])
-    n_datos = sum(freq_observadas)
+    n_datos = len(datos)
     clases = list(frequency_table["Clases"])
     intervalo = round(clases[1] - clases[0], 4)
     k_clases = len(clases)
@@ -51,6 +53,12 @@ def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_typ
         funcion = lambda xinf, xsup: (1 -  e ** (- (1/media) * xsup)) - (1 -  e ** (- (1/media) * xinf))
     elif distribution_type == "Normal":
         funcion = lambda xinf, xsup: norm.cdf(xsup, media, desviacion) - norm.cdf(xinf, media, desviacion)
+
+
+        desviacion = round(  math.sqrt(sum([(e - media) ** 2 for e in datos]) / len(datos) )     , 4)
+
+
+        
     else:
         print("Distribucion no valida")
         return
@@ -59,10 +67,14 @@ def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_typ
     # Calcular por primera vez las frecuencias esperadas y fefos
     for i in range(k_clases):
         if distribution_type == "Uniforme":
-            freq_esperadas[i] = funcion(0)
+            freq_esperadas[i] = round(funcion(0),4)
         else:
             freq_esperadas[i] = round( (funcion(round(clases[i]-intervalo, 4), clases[i])) * n_datos, 4 )
         
+
+
+    # print(f"FRECUENCIAS ESPERADAS: {freq_esperadas}")
+    # print(f"FRECUENCIAS OBSERVADAS: {freq_observadas}")
 
 
     # Agrupar intervalos si hace falta
@@ -71,12 +83,13 @@ def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_typ
         freq_esperadas, indices_a_modificar = get_new_list_and_indexes_changes(freq_esperadas)
 
 
-        # Por cada par de indices a juntar, modificar todas las columnas 
+        # Por cada par de indices a juntar, modificar todas las columnas MENOS LAS FRECUENCIAS ESPERADAS, porque eso se hizo 2 lineas atras
         for indice_inicio, indice_final in indices_a_modificar:
-            freq_observadas = join_elements_in_list(freq_observadas, indice_inicio, indice_final)
-            freq_esperadas = join_elements_in_list(freq_esperadas, indice_inicio, indice_final)
+            freq_observadas = join_elements_in_list(freq_observadas, indice_inicio, indice_final)          
             clases = join_classes_in_list(clases, indice_inicio, indice_final)
         k_clases = len(freq_observadas)
+
+        # print(f"FRecuencia observada: {len(freq_observadas)}\nFrecuencia Esperada: {len(freq_esperadas)}")
 
 
 
@@ -88,9 +101,13 @@ def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_typ
 
     fefo_cuadrado = [0] * k_clases
     fefo_sobre_fe = [0] * k_clases
+    # print(freq_esperadas)
+    # print(freq_observadas)
 
 
-    
+    # if len(freq_esperadas) < k_clases:
+    #     freq_esperadas.extend([0] * (k_clases - len(freq_esperadas)))
+
     for i in range(k_clases):
         fefo_cuadrado[i] = round((freq_esperadas[i] - freq_observadas[i]) ** 2, 4)
         fefo_sobre_fe[i] = round(fefo_cuadrado[i] / freq_esperadas[i], 4)
@@ -117,6 +134,63 @@ def chi_square_calc(frequency_table, media=1.0, desviacion=1.0, distribution_typ
 
 
 
+
+
+
+# with open("datos_error.csv","rt") as f:
+#     datos = [float(d.strip()) for d in f.readlines()]
+
+
+
+
+
+
+# media = round(sum(datos) / len(datos), 4)
+# de = round(  (sum([(e - media) ** 2 for e in datos]) / len(datos) )     , 4)
+
+# t = generacion_tablas.generate_frequency_table(datos, 10)
+# chi_square_calc(datos, t, distribution_type="Normal")
+
+
+
+# fe = [0.0, 0.0131, 2.1752, 68.3287, 431.0089, 576.8808, 165.6975, 9.7839, 0.1117, 0.0002]
+# i = [(0, 3), (4, 5), (4, 5)]
+
+
+# for b, e in i:
+#     fe = join_elements_in_list(fe, b, e)
+
+# print(fe)
+
+# while True:
+
+#     unifo = []
+#     for i in range(1000):
+#         r = round(random.random(), 4)
+#         if r == 1.0:
+#             r = 0.9999
+#         unifo.append(r)
+
+
+
+
+#     # with open("uni.csv", "wt") as f:
+#     #     for u in unifo:
+#             # f.write(str(u) + "\n")
+#     try:
+#         normales = distribucion_normal.distribucion_normal(unifo, 5, 2)
+#     except ValueError as e:
+#         print(unifo)
+
+
+# unifo = [round(random.random(), 4) for i in range(20)]
+
+
+# normales = distribucion_normal.distribucion_normal(unifo, 5, 2)
+
+    
+
+# chi_square_calc(normales, 5, 2, "Normal")
 
 
 
@@ -332,14 +406,14 @@ def test_expo(un, media, k=10):
 #         f.write(str(d)+"\n")
 
 
-with open("datostp2.csv", "rt") as f:
-    datos = [round(float(d),4) for d in f.readlines()]
+# with open("datostp2.csv", "rt") as f:
+#     datos = [round(float(d),4) for d in f.readlines()]
 
-ft = generacion_tablas.generate_frequency_table(datos, 10)
-c, t = chi_square_calc(frequency_table=ft, media=5, distribution_type="Exponencial")
-c2, t2 = chi_square_calc_sin_agrupar(frequency_table=ft, media=5, distribution_type="Exponencial")
-print(c)
-print(t)
+# ft = generacion_tablas.generate_frequency_table(datos, 10)
+# c, t = chi_square_calc(frequency_table=ft, media=5, distribution_type="Exponencial")
+# c2, t2 = chi_square_calc_sin_agrupar(frequency_table=ft, media=5, distribution_type="Exponencial")
+# print(c)
+# print(t)
 
 
 # datos = distribucion_exponencial.distribucion_exponencial(unifo, 30)

@@ -9,7 +9,7 @@ import sub_menu_distribucion
 
 
 while True:
-    clear_console()
+    # clear_console()
     print("\n-- Opciones --")
     print("1 - Distribución uniforme(A,B)")
     print("2 - Distribución normal")
@@ -54,5 +54,6 @@ while True:
             break
     
     except ValueError:
+        print(opc)
         print("Opción no válida. Por favor ingrese un número entero.")
         wait_for_enter()

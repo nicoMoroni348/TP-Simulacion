@@ -57,7 +57,7 @@ def menu_uniforme():
 
             elif opc_uniforme == 4:
                 # print(t)
-                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, distribution_type="Uniforme")
+                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(numeros_uniformes, t, distribution_type="Uniforme")
                 print("Tabla de chi cuadrado: \n", tabliti)
                 print("Chi cuadrado: ", chi_cuadrado)
                 input("\nPresione enter para continuar...")
@@ -79,6 +79,8 @@ def menu_normal():
     media = validar_media()
     # desviacion = float(input("Ingrese el valor de la desviación: "))
     desviacion = validar_desviacion_estandar(media)
+
+    print("Lacabra")
 
     numeros_nomrales = distribucion_normal.distribucion_normal(numeros_random, media, desviacion)
 
@@ -113,7 +115,7 @@ def menu_normal():
                 input("\nPresione enter para continuar...")
                 
             elif opc_normal == 4:
-                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, media, desviacion, distribution_type="Normal")
+                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(numeros_nomrales, t, distribution_type="Normal")
                 print("Tabla de chi cuadrado: \n", tabliti)
                 print("Chi cuadrado: ", chi_cuadrado)
                 
@@ -123,6 +125,7 @@ def menu_normal():
                 break
         
         except ValueError:
+            print(opc_normal)
             print("Opción no válida. Por favor ingrese un número entero.")
 
 
@@ -133,7 +136,7 @@ def menu_exponencial():
 
     media = validar_media()
 
-    desviacion = float(input("Ingrese el valor de la desviación: "))
+    # desviacion = float(input("Ingrese el valor de la desviación: "))
 
     numeros_exp = distribucion_exponencial.distribucion_exponencial(numeros_random, media)
 
@@ -167,7 +170,7 @@ def menu_exponencial():
                 input("\nPresione enter para continuar...")
 
             elif opc_exponencial == 4:
-                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(t, media, desviacion, distribution_type="Exponencial")
+                chi_cuadrado, tabliti = prueba_chi_cuadrado.chi_square_calc(numeros_exp, t, distribution_type="Exponencial")
                 print("Tabla de chi cuadrado: \n", tabliti)
                 print("Chi cuadrado: ", chi_cuadrado)
                 input("\nPresione enter para continuar...")
