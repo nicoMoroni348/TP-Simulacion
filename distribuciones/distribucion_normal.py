@@ -23,11 +23,9 @@ def distribucion_normal(numeros_uniformes_0_1, media, desviacion):
         numeros_distribucion_normal.append(x_1)
         numeros_distribucion_normal.append(x_2)
 
-    with open("datos_error.csv", "wt") as f:
+    with open("datos_normal.csv", "wt") as f:
         for e in numeros_distribucion_normal:
             f.write(str(e)+"\n")
 
         
-
-
     return numeros_distribucion_normal
