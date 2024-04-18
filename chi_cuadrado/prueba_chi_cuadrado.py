@@ -44,7 +44,7 @@ def chi_square_calc(datos, frequency_table, distribution_type="Uniforme"):
     elif distribution_type == "Normal":
 
         # Calcular la desviacion estandar
-        desviacion = round(  math.sqrt(sum([(e - media) ** 2 for e in datos]) / len(datos) )     , 4)
+        desviacion = round(  math.sqrt(sum([(e - media) ** 2 for e in datos]) / (len(datos)-1) )     , 4)
 
         # Aqui utilizamos la libreria scipy stats
         funcion = lambda xinf, xsup: norm.cdf(xsup, media, desviacion) - norm.cdf(xinf, media, desviacion)
@@ -111,3 +111,20 @@ def chi_square_calc(datos, frequency_table, distribution_type="Uniforme"):
     chi_cuadrado = round(sum(fefo_sobre_fe), 4)
     # print(f"Chi cuadrao: {chi_cuadrado}")
     return chi_cuadrado, tabliti
+
+
+
+
+
+
+# with open("datos_normal.csv", "rt") as f:
+
+#     datos = [float(d.strip()) for d in f.readlines()]
+
+
+# t = generacion_tablas.generate_frequency_table(datos, 10)
+
+
+# chi, t2 = chi_square_calc(datos, t, "Normal")
+# print(chi)
+# print(t2)

@@ -175,3 +175,13 @@ def validar_media():
                 print("La media debe ser un número positivo. Inténtelo de nuevo.")
         except ValueError:
             print("Ingrese un valor numérico para la media.")
+
+
+
+
+
+
+
+
+
+
