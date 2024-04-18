@@ -6,13 +6,16 @@ import os
 def generacion_numeros_uniformes(n):
     numeros_uniformes_0_1 = []
     for _ in range(n):
-        r = round(random.random(), 4)
+        # r = round(random.random(), 4)
+        r = random.random()
 
 
         # Con el redondeo un 0.99995... se redondea a 1.0
         # Este codigo evita que random.random() devuelva un 1.0 al redondear
-        if r == 1.0:
-            r = 0.9999 # Redondeo "manual"
+        # while r == 1.0:
+        #     # r = 0.9999 # Redondeo "manual"
+        #     # r = round(random.random(), 4)
+        #     r = random.random()
         numeros_uniformes_0_1.append(r)
     
     return numeros_uniformes_0_1

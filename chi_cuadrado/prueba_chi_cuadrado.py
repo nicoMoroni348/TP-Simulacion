@@ -117,7 +117,7 @@ def chi_square_calc(datos, frequency_table, distribution_type="Uniforme"):
 
 
 
-# with open("datos_normal.csv", "rt") as f:
+# with open("datos_exponencial.csv", "rt") as f:
 
 #     datos = [float(d.strip()) for d in f.readlines()]
 
@@ -125,6 +125,11 @@ def chi_square_calc(datos, frequency_table, distribution_type="Uniforme"):
 # t = generacion_tablas.generate_frequency_table(datos, 10)
 
 
+# for d in datos:
+#     if d > 35:
+#         print(d)
+
+
 # chi, t2 = chi_square_calc(datos, t, "Normal")
 # print(chi)
-# print(t2)
+# print(t2)s

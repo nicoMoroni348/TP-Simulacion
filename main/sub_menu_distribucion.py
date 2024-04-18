@@ -29,7 +29,7 @@ def menu_uniforme():
         print("1 - Mostrar serie de números generada")
         print("2 - Mostrar histograma")
         print("3 - Mostrar tabla de frecuencias")
-        print("4 - Realizar prueba de chi cuadrado")
+        print("4 - Calcular chi cuadrado")
         print("5 - Ingresar nuevo numeros de intervalos")
         print("0 - Volver al menú principal")
 
@@ -90,7 +90,7 @@ def menu_normal():
         print("1 - Mostrar serie de números generada")
         print("2 - Mostrar histograma")
         print("3 - Mostrar tabla de frecuencias")
-        print("4 - Realizar prueba de chi cuadrado")
+        print("4 - Calcular chi cuadrado")
         print("5 - Ingresar nuevo numeros de intervalos")
         print("0 - Volver al menú principal")
         
@@ -149,7 +149,7 @@ def menu_exponencial():
         print("1 - Mostrar serie de números generada")
         print("2 - Mostrar histograma")
         print("3 - Mostrar tabla de frecuencias")
-        print("4 - Realizar prueba de chi cuadrado")
+        print("4 - Calcular chi cuadrado")
         print("5 - Ingresar nuevo numeros de intervalos")
         print("0 - Volver al menú principal")
         
