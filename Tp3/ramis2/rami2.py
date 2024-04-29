@@ -26,13 +26,6 @@ def clasificar_numero_aleatorio(rnd, clases, probabilidad_x_clase):
         
 
 
-# def generar_numero_aleatorio(generar_nuevo=True):
-#     if generar_nuevo:
-#         r = random.random()
-#         with open("numeros_aleatorios.csv", "r+t") as f:
-#             f
-
-
 def generar_numeros_aleatorios(n=1, generar_nuevos=True):
     tipo_generacion = ('puerta', 'género', 'venta', 'suscripciones')
     

@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 
 
-
 def acumular_probabilidades(probabilidades):
     acumulados = [probabilidades[0]]
     for i in range(1, len(probabilidades)):
