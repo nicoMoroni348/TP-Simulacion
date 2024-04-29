@@ -1,10 +1,13 @@
-from rami2 import clasificar_numero_aleatorio, generar_numeros_aleatorios
+import sys
+import os
+
+sys.path.append(os.getcwd())
+
+from support import clasificar_numero_aleatorio, generar_numeros_aleatorios
+
+
 
 # -- PARÁMETROS --
-
-
-
-
 
 probabilidad_puerta = [0.7, 0.3]
 
@@ -20,11 +23,12 @@ probabilidades_suscripciones_hombre = [0.1, 0.4, 0.3, 0.2] # este es variable
 utilidad_por_suscripcion = 200.0 # este es variable
 
 n_visitas = 100000 # este es variable
+ 
 
-
-
+ 
+ 
 # -- SIMULACION --
-
+ 
 def simulacion_visitas(vectores_numeros_aleatorios, n_visitas, 
                       utilidad_por_suscripcion, probabilidad_puerta, 
                       probabilidad_genero, probabilidad_venta_mujer,
@@ -54,19 +58,12 @@ def simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
 
         total_ventas = total_ventas_anterior
 
-
-
-
-
         fila_visita = [iteracion+1, False, None, False, 0, 0.0, total_utilidad_anterior, total_ventas_anterior, prob_calc_ventas_anterior]
-        
-        
-        
+
         abrio_puerta = vector_probabilidades_puerta[iteracion] < probabilidad_puerta[0]
 
         if abrio_puerta:
             fila_visita[1] = True
-            
 
             genero = clasificar_numero_aleatorio(vector_probabilidades_genero[iteracion],
                                                    ["M", "H"], probabilidad_genero)
@@ -147,7 +144,6 @@ def simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
 
         # Agregar fila al vector estado
         vector_estado.append(fila_visita)
-        # print(f"Iteracion: {fila_visita}")
 
 
     return vector_estado
@@ -167,10 +163,15 @@ v_e = simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
                       probabilidades_suscripciones_hombre)
 
 
+import pandas as pd
 
-i = 40
-j = 1000
+df = pd.DataFrame(v_e)
 
-# print(v_e[i:j])
-for fila in v_e[i-1:j]:
-    print(fila)
+df.to_excel("hola.xlsx", index=False)
+
+# i = 40
+# j = 1000
+
+# # print(v_e[i:j])
+# for fila in v_e[i-1:j]:
+#     print(fila)
