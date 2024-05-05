@@ -4,6 +4,7 @@ import xlsxwriter
 import xlsxwriter.format
 import openpyxl as opxl
 import os
+from tkinter import messagebox
 
 def acumular_probabilidades(probabilidades):
     acumulados = [probabilidades[0]]
@@ -45,6 +46,89 @@ def generar_numeros_aleatorios(n=1, generar_nuevos=True):
                 vectores_aleatorios.append(vec)
         
     return vectores_aleatorios
+
+
+
+def validar_parametros(probabilidad):
+    try:
+        probabilidad = float(probabilidad)
+    except ValueError:
+        messagebox.showerror("Error", "Por favor ingrese valores numéricos válidos para todos los parámetros.")
+        return False
+
+    # Validar rangos y formatos
+    if not 0 <= probabilidad < 1:
+        messagebox.showerror("Error", "Las probabilidades deben estar entre 0 y 1.")
+        return False
+
+    return True
+
+
+
+# Hay que ver si se pueden pasar asi los frame y desglozarlos
+def validar_distribuciones(frame_sra, frame_sr):
+    distribucion_suscripciones_sra_entry1, distribucion_suscripciones_sra_entry2, distribucion_suscripciones_sra_entry3 = frame_sra
+    
+    # Obtener los valores de las entradas en el frame de distribución de suscripciones para señoras
+    valores_sra = [int(entry.get()) for entry in (distribucion_suscripciones_sra_entry1,
+                                                   distribucion_suscripciones_sra_entry2,
+                                                   distribucion_suscripciones_sra_entry3)]
+
+    # Sumar los valores y verificar si la suma es igual a 1
+    suma_sra = sum(valores_sra)
+    if suma_sra != 1:
+        messagebox.showerror("Error", "La suma de las probabilidades para señoras debe ser igual a 1.")
+        return False
+
+    distribucion_suscripciones_sr_entry1, distribucion_suscripciones_sr_entry2, distribucion_suscripciones_sr_entry3, distribucion_suscripciones_sr_entry4 = frame_sr
+
+    # Obtener los valores de las entradas en el frame de distribución de suscripciones para señores
+    valores_sr = [int(entry.get()) for entry in (distribucion_suscripciones_sr_entry1,
+                                                  distribucion_suscripciones_sr_entry2,
+                                                  distribucion_suscripciones_sr_entry3,
+                                                  distribucion_suscripciones_sr_entry4)]
+
+    # Sumar los valores y verificar si la suma es igual a 1
+    suma_sr = sum(valores_sr)
+    if suma_sr != 1:
+        messagebox.showerror("Error", "La suma de las probabilidades para señores debe ser igual a 1.")
+        return False
+
+    # Si todas las sumas son igual a 1, retornar True
+    return True
+
+
+
+
+
+
+def probabilidad_a_distribucion(probabilidad):
+    probabilidad_distribuida = []
+    probabilidad_distribuida.append(probabilidad)
+    probabilidad_distribuida.append(1-probabilidad)
+
+    return probabilidad_distribuida
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -126,6 +210,7 @@ def generate_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", aut
 
 
 def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_open=True):
+    # Creamos el handler del workbook y la hoja
     wb = opxl.Workbook()
     ws = wb.active
     ws.title = "Data"
@@ -143,17 +228,20 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
     for fila in vector_estado[j-1:j-1+i]:
         if fila[4] is None:
             fila[4] = "--"
+        if fila[6] is None:
+            fila[6] = "--"
         fila[1] = round(fila[1],4)
         fila[3] = round(fila[3],4)
         fila[5] = round(fila[5], 4)
         fila[7] = round(fila[7], 4)
         fila[-1] = round(fila[-1], 4)
+
         ws.append(fila)
 
 
 
     
-    
+    # Por cada columna de la tabla
     for letra in "ABCDEFGHIJKLM":
         # Ajustar ancho de columnas
         if ws.column_dimensions[letra].has_style:
@@ -183,7 +271,7 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
 
     
 
-    # Save the last row always
+    # Guardar la ultima fila siempre
 
     # create new sheet and append the headers row
     last_row_sheet = wb.create_sheet("Ultima Iteracion")
@@ -197,11 +285,14 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
     ultima_iteracion = vector_estado[-1]
     if ultima_iteracion[4] is None:
         ultima_iteracion[4] = "--"
-    ultima_iteracion[1] = round(fila[1],4)
-    ultima_iteracion[3] = round(fila[3],4)
-    ultima_iteracion[5] = round(fila[5], 4)
-    ultima_iteracion[7] = round(fila[7], 4)
-    ultima_iteracion[-1] = round(fila[-1], 4)
+    if ultima_iteracion[6] is None:
+        ultima_iteracion[6] = "--"
+    ultima_iteracion[1] = round(ultima_iteracion[1], 4)
+    ultima_iteracion[3] = round(ultima_iteracion[3], 4)
+    ultima_iteracion[5] = round(ultima_iteracion[5], 4)
+    ultima_iteracion[7] = round(ultima_iteracion[7], 4)
+    print(f"{ultima_iteracion[-1]} LA CABRA LA CABRA")
+    ultima_iteracion[-1] = round(ultima_iteracion[-1], 4)
 
     last_row_sheet.append(ultima_iteracion)
 
@@ -233,7 +324,7 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
 
 
 
-
+    # Auto abrir el excel 
     if auto_open:
         os.startfile(filepath)
     

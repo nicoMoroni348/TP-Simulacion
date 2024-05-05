@@ -4,6 +4,7 @@ import os
 sys.path.append(os.getcwd())
 
 
+
 from support import clasificar_numero_aleatorio, generar_numeros_aleatorios, generate_table, get_table
 
 
@@ -106,6 +107,10 @@ def simular_visita(iteracion, fila_anterior, rnd_puerta, rnd_genero, rnd_venta,
     return fila_visita
 
 
+
+
+
+
 def simulacion_visitas(vectores_numeros_aleatorios, n_visitas, 
                       utilidad_por_suscripcion, probabilidad_puerta, 
                       probabilidad_genero, probabilidad_venta_mujer,
@@ -137,7 +142,7 @@ def simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
                    probabilidad_genero, probabilidad_venta_mujer, probabilidad_venta_hombre, 
                    probabilidades_suscripciones_mujer, probabilidades_suscripciones_hombre)
         
-                # Actualizar la fila anterior
+        # Actualizar la fila anterior
         fila_anterior = fila_visita
 
         # Agregar fila al vector estado
@@ -147,22 +152,29 @@ def simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
     return vector_estado
 
 
-vectores_numeros_aleatorios = generar_numeros_aleatorios(n_visitas, generar_nuevos=False)
-vectores_numeros_aleatorios = generar_numeros_aleatorios(n_visitas, generar_nuevos=True)
 
 
-v_e = simulacion_visitas(vectores_numeros_aleatorios, n_visitas, 
-                      utilidad_por_suscripcion, probabilidad_puerta, 
-                      probabilidad_genero, probabilidad_venta_mujer,
-                      probabilidad_venta_hombre, probabilidades_suscripciones_mujer, 
-                      probabilidades_suscripciones_hombre)
 
 
-# for e in v_e:
-#     print(e)
 
-# print(len(v_e[0]))
+if __name__ == "__main__":
 
-get_table(vector_estado=v_e, i=100, j=40)
+    vectores_numeros_aleatorios = generar_numeros_aleatorios(n_visitas, generar_nuevos=False)
+    # vectores_numeros_aleatorios = generar_numeros_aleatorios(n_visitas, generar_nuevos=True)
+
+
+    v_e = simulacion_visitas(vectores_numeros_aleatorios, n_visitas, 
+                        utilidad_por_suscripcion, probabilidad_puerta, 
+                        probabilidad_genero, probabilidad_venta_mujer,
+                        probabilidad_venta_hombre, probabilidades_suscripciones_mujer, 
+                        probabilidades_suscripciones_hombre)
+
+
+    for e in v_e:
+        print(e)
+
+    # print(len(v_e[0]))
+
+    get_table(vector_estado=v_e, i=100, j=40)
 
 

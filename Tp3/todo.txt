@@ -2,10 +2,12 @@
 [x] Que cierre la ventana de actualizar cuando se actualicen
 [x] Hacer que se pare el codigo cuando se cierra la ventana
 [x] Mejorar lo del excel y hacer que se abra automaticamente
+[x] Que te avise cuando se actualizan los parametros
+[x] Que te avise cuando se hayan generado nuevos numeros aleatorios
+[x]Conectar el boton de generar simulacion, con generar la simulacion y abrir el excel
+[x] Gestionar el tema de los parametros
 
-Que te avise cuando hay error en las validaciones
-Que te avise cuando se actualizan los parametros
-Que te avise cuando se hayan generado nuevos numeros aleatorios
+
 Hacer las validaciones donde esta comentado xD
-Conectar el boton de generar simulacion, con generar la simulacion y abrir el excel
 Validar que no te deje hacer generar otra hasta que no se cierre el excel anterior
+Que te avise cuando hay error en las validaciones
