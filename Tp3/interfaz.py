@@ -24,6 +24,7 @@ probabilidad_venta_a_sr = 0.0
 utilidad_por_suscripcion = 0.0
 distribucion_suscripciones_sra = [0.0, 0.0, 0.0]
 distribucion_suscripciones_sr = [0.0, 0.0, 0.0, 0.0]
+crear_nuevos_rnd = False
 
 
 def on_closing():

@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.getcwd())
 
-from support import clasificar_numero_aleatorio, generar_numeros_aleatorios, generate_table
+from support import clasificar_numero_aleatorio, generar_numeros_aleatorios, generate_table, get_table
 
 
 
@@ -22,7 +22,7 @@ probabilidades_suscripciones_hombre = [0.1, 0.4, 0.3, 0.2] # este es variable
 
 utilidad_por_suscripcion = 200.0 # este es variable
 
-n_visitas = 100 # este es variable
+n_visitas = 1000 # este es variable
 
 # -- SIMULACION --
 
@@ -167,8 +167,7 @@ def simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
 
 
 
-vectores_numeros_aleatorios = generar_numeros_aleatorios(n_visitas, generar_nuevos=False)
-
+vectores_numeros_aleatorios = generar_numeros_aleatorios(n_visitas, generar_nuevos=True)
 
 
 v_e = simulacion_visitas(vectores_numeros_aleatorios, n_visitas, 
@@ -185,4 +184,6 @@ v_e = simulacion_visitas(vectores_numeros_aleatorios, n_visitas,
 
 # print(len(v_e[0]))
 
-generate_table(vector_estado=v_e, i=10, j=5)
+get_table(vector_estado=v_e, i=100, j=40)
+
+
