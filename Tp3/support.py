@@ -48,54 +48,99 @@ def generar_numeros_aleatorios(n=1, generar_nuevos=True):
     return vectores_aleatorios
 
 
+def validar_i_j(i, j, n):
 
-def validar_parametros(probabilidad):
     try:
-        probabilidad = float(probabilidad)
+        i = int(i)
+        j = int(j)
     except ValueError:
-        messagebox.showerror("Error", "Por favor ingrese valores numéricos válidos para todos los parámetros.")
+        return False
+    
+    if j > n:
+        return False
+    if j < 1:
+        return False
+    if i < 1:
+        return False
+    if i + j > n + 1:
         return False
 
-    # Validar rangos y formatos
-    if not 0 <= probabilidad < 1:
-        messagebox.showerror("Error", "Las probabilidades deben estar entre 0 y 1.")
-        return False
+    return i, j
 
-    return True
+
+
+def validar_n(n_visitas):
+
+    try:
+        n_visitas = int(n_visitas)
+    except ValueError:
+        return False
+    
+    if not 10 <= n_visitas <= 1000000:
+        return False
+    
+    return n_visitas
+
+
+
+def validar_parametros(puerta, genero, venta_sra, venta_sr, utilidad):
+
+    probs = []
+
+    for i, prob in enumerate((puerta, genero, venta_sra, venta_sr, utilidad)):
+        
+
+        try:
+            probabilidad = float(prob)
+        except ValueError:
+            # messagebox.showerror("Error", "Por favor ingrese valores numéricos válidos para todos los parámetros.")
+            return False
+
+        # Validar rangos y formatos
+        if i != 4 and not 0 <= probabilidad < 1:
+            # messagebox.showerror("Error", "Las probabilidades deben estar entre 0 y 1.")
+            return False
+        
+        probs.append(probabilidad)
+
+    return probs
 
 
 
 # Hay que ver si se pueden pasar asi los frame y desglozarlos
-def validar_distribuciones(frame_sra, frame_sr):
-    distribucion_suscripciones_sra_entry1, distribucion_suscripciones_sra_entry2, distribucion_suscripciones_sra_entry3 = frame_sra
+def validar_distribuciones(dist_sra, dist_sr):
     
-    # Obtener los valores de las entradas en el frame de distribución de suscripciones para señoras
-    valores_sra = [int(entry.get()) for entry in (distribucion_suscripciones_sra_entry1,
-                                                   distribucion_suscripciones_sra_entry2,
-                                                   distribucion_suscripciones_sra_entry3)]
+    try:
+        # Obtener los valores de las entradas en el frame de distribución de suscripciones para señoras
+        valores_sra = [float(entry.get()) for entry in dist_sra]
+        valores_sra = [val for val in valores_sra if 0 <= val < 1]
+    except ValueError:
+        # Alguno de los parametros no es float
+        return False 
 
     # Sumar los valores y verificar si la suma es igual a 1
     suma_sra = sum(valores_sra)
-    if suma_sra != 1:
-        messagebox.showerror("Error", "La suma de las probabilidades para señoras debe ser igual a 1.")
+    if suma_sra != 1 and len(valores_sra) != 3:
+        # messagebox.showerror("Error", "La suma de las probabilidades para señoras debe ser igual a 1.")
         return False
 
-    distribucion_suscripciones_sr_entry1, distribucion_suscripciones_sr_entry2, distribucion_suscripciones_sr_entry3, distribucion_suscripciones_sr_entry4 = frame_sr
 
-    # Obtener los valores de las entradas en el frame de distribución de suscripciones para señores
-    valores_sr = [int(entry.get()) for entry in (distribucion_suscripciones_sr_entry1,
-                                                  distribucion_suscripciones_sr_entry2,
-                                                  distribucion_suscripciones_sr_entry3,
-                                                  distribucion_suscripciones_sr_entry4)]
+    try:
+        # Obtener los valores de las entradas en el frame de distribución de suscripciones para señores
+        valores_sr = [float(entry.get()) for entry in dist_sr]
+        valores_sr = [val for val in valores_sr if 0 <= val < 1]
+    except ValueError:
+        # Alguno de los parametros no es float
+        return False
 
     # Sumar los valores y verificar si la suma es igual a 1
     suma_sr = sum(valores_sr)
-    if suma_sr != 1:
+    if suma_sr != 1 and len(valores_sr) != 4:
         messagebox.showerror("Error", "La suma de las probabilidades para señores debe ser igual a 1.")
         return False
 
     # Si todas las sumas son igual a 1, retornar True
-    return True
+    return (valores_sra, valores_sr)
 
 
 
@@ -291,7 +336,6 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
     ultima_iteracion[3] = round(ultima_iteracion[3], 4)
     ultima_iteracion[5] = round(ultima_iteracion[5], 4)
     ultima_iteracion[7] = round(ultima_iteracion[7], 4)
-    print(f"{ultima_iteracion[-1]} LA CABRA LA CABRA")
     ultima_iteracion[-1] = round(ultima_iteracion[-1], 4)
 
     last_row_sheet.append(ultima_iteracion)
