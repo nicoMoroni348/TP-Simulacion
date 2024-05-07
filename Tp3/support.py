@@ -101,6 +101,11 @@ def validar_parametros(puerta, genero, venta_sra, venta_sr, utilidad):
             # messagebox.showerror("Error", "Las probabilidades deben estar entre 0 y 1.")
             return False
         
+         # Validar utilidad positiva
+        if i == 4 and probabilidad <= 0:
+            # messagebox.showerror("Error", "La utilidad debe ser positiva.")
+            return False
+        
         probs.append(probabilidad)
 
     return probs
@@ -120,7 +125,7 @@ def validar_distribuciones(dist_sra, dist_sr):
 
     # Sumar los valores y verificar si la suma es igual a 1
     suma_sra = sum(valores_sra)
-    if suma_sra != 1 and len(valores_sra) != 3:
+    if suma_sra != 1 or len(valores_sra) != 3:
         # messagebox.showerror("Error", "La suma de las probabilidades para señoras debe ser igual a 1.")
         return False
 
@@ -135,8 +140,8 @@ def validar_distribuciones(dist_sra, dist_sr):
 
     # Sumar los valores y verificar si la suma es igual a 1
     suma_sr = sum(valores_sr)
-    if suma_sr != 1 and len(valores_sr) != 4:
-        messagebox.showerror("Error", "La suma de las probabilidades para señores debe ser igual a 1.")
+    if suma_sr != 1 or len(valores_sr) != 4:
+        # messagebox.showerror("Error", "La suma de las probabilidades para señores debe ser igual a 1.")
         return False
 
     # Si todas las sumas son igual a 1, retornar True
