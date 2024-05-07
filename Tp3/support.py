@@ -124,7 +124,8 @@ def validar_distribuciones(dist_sra, dist_sr):
         return False 
 
     # Sumar los valores y verificar si la suma es igual a 1
-    suma_sra = sum(valores_sra)
+    suma_sra = round(sum(valores_sra), 4)
+    print(suma_sra)
     if suma_sra != 1 or len(valores_sra) != 3:
         # messagebox.showerror("Error", "La suma de las probabilidades para señoras debe ser igual a 1.")
         return False
@@ -139,7 +140,7 @@ def validar_distribuciones(dist_sra, dist_sr):
         return False
 
     # Sumar los valores y verificar si la suma es igual a 1
-    suma_sr = sum(valores_sr)
+    suma_sr = round(sum(valores_sr), 4)
     if suma_sr != 1 or len(valores_sr) != 4:
         # messagebox.showerror("Error", "La suma de las probabilidades para señores debe ser igual a 1.")
         return False
