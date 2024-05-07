@@ -4,7 +4,7 @@ from simulacion_visita import simulacion_visitas
 from support import get_table, generar_numeros_aleatorios, validar_parametros,  \
                 validar_distribuciones, probabilidad_a_distribucion, validar_i_j,\
                 validar_n
-
+from tkinter import ttk
 
 class SimulationApp:
     def __init__(self):
@@ -83,8 +83,10 @@ class SimulationApp:
 
 
         # y Generar la tabla get_table
-        
-        get_table(vector_estado=v_e, i=self.i, j=self.j, auto_open=True)
+        try:
+            get_table(vector_estado=v_e, i=self.i, j=self.j, auto_open=True)
+        except PermissionError:
+            self.mostrar_ventana_error("Debe cerrar la ventana de excel para realizar nuevamente la simulacion")
         
 
 
@@ -210,8 +212,8 @@ class SimulationApp:
             print("Los datos se han actualizado correctamente.")
 
 
-    def mostrar_ventana_error(self):
-        response = messagebox.showerror("Error", "¡Parámetros ingresados no válidos")
+    def mostrar_ventana_error(self, mensaje="¡Parámetros ingresados no válidos"):
+        response = messagebox.showerror("Error", mensaje)
         # if response:
         #     print("Los datos se han actualizado correctamente.")
 
@@ -228,6 +230,7 @@ class SimulationApp:
         self.menu_actualizar_parametros.configure(bg='white')
         self.menu_actualizar_parametros.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.menu_actualizar_parametros.resizable(False, False)
+        self.menu_actualizar_parametros.iconbitmap('goat.ico')
 
 
         # ---------- Labels y Entries
@@ -292,12 +295,25 @@ class SimulationApp:
         self.distribucion_suscripciones_sr_entry4.insert(0, str(self.distribucion_suscripciones_sr[3]))
 
         # Botones
+
+        # self.listo_button = tk.Button(self.menu_config_inicial, text="Confirmar",fg="white", command=self.inicializar_parametros, bg='green', activebackground='darkgreen', bd=1, relief='raised')
+        # self.listo_button.bind("<Enter>", lambda e: self.listo_button.config(bg="darkgreen"))
+        # self.listo_button.bind("<Leave>", lambda e: self.listo_button.config(bg="green"))
+
+        # self.cancelar_button = tk.Button(self.menu_config_inicial, text="Cancelar",fg="white", command=self.on_closing, bg='#C62020', activebackground='darkred', bd=1, relief='raised')
+        # self.cancelar_button.bind("<Enter>", lambda e: self.cancelar_button.config(bg="darkred"))
+        # self.cancelar_button.bind("<Leave>", lambda e: self.cancelar_button.config(bg="#C62020"))
+
+
         self.actualizar_button = tk.Button(self.menu_actualizar_parametros, text="Actualizar", command=self.actualizar_parametros,
-                                    bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
+                                    bg='#add8e6', activebackground='#A6F775', bd=0, relief='raised', overrelief='groove', highlightbackground='black')
+        self.actualizar_button.bind("<Enter>", lambda e: self.cancelar_button.config(bg="#A6F775"))
+        self.actualizar_button.bind("<Leave>", lambda e: self.cancelar_button.config(bg="#add8e6"))
         
 
-        self.volver_button = tk.Button(self.menu_actualizar_parametros, text="Regresar", command=self.abrir_menu_principal, bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
-
+        self.volver_button = tk.Button(self.menu_actualizar_parametros, text="Regresar", command=self.abrir_menu_principal, bg='#add8e6', activebackground='#87ceeb', bd=0, relief='raised', overrelief='groove', highlightbackground='black')
+        self.volver_button.bind("<Enter>", lambda e: self.cancelar_button.config(bg="darkred"))
+        self.volver_button.bind("<Leave>", lambda e: self.cancelar_button.config(bg="darkred"))
 
 
 
@@ -414,6 +430,7 @@ class SimulationApp:
         self.menu_principal.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.menu_principal.geometry("250x200")
         self.menu_principal.resizable(False, False)
+        self.menu_principal.iconbitmap('goat.ico')
     
 
         # Actualización de i & j
@@ -463,7 +480,7 @@ class SimulationApp:
         self.menu_config_inicial.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.menu_config_inicial.resizable(False, False)
 
-
+        self.menu_config_inicial.iconbitmap('goat.ico')
 
 
         # Widgets de la primer ventana (Configuracion Inicial)
@@ -537,14 +554,29 @@ class SimulationApp:
 
 
 
-        self.listo_button = tk.Button(self.menu_config_inicial, text="Confirmar", command=self.inicializar_parametros, 
-                                 bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
-        self.listo_button.bind("<Enter>", lambda e: self.listo_button.config(bg="#87ceeb"))
-        self.listo_button.bind("<Leave>", lambda e: self.listo_button.config(bg="#add8e6"))
+        
+        self.listo_button = tk.Button(self.menu_config_inicial, text="Confirmar",fg="white", command=self.inicializar_parametros, bg='green', activebackground='darkgreen', bd=1, relief='raised')
+        self.listo_button.bind("<Enter>", lambda e: self.listo_button.config(bg="darkgreen"))
+        self.listo_button.bind("<Leave>", lambda e: self.listo_button.config(bg="green"))
 
-        self.cancelar_button = tk.Button(self.menu_config_inicial, text="Cancelar", command=self.on_closing, bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
-        self.cancelar_button.bind("<Enter>", lambda e: self.cancelar_button.config(bg="#87ceeb"))
-        self.cancelar_button.bind("<Leave>", lambda e: self.cancelar_button.config(bg="#add8e6"))
+        self.cancelar_button = tk.Button(self.menu_config_inicial, text="Cancelar",fg="white", command=self.on_closing, bg='#C62020', activebackground='darkred', bd=1, relief='raised')
+        self.cancelar_button.bind("<Enter>", lambda e: self.cancelar_button.config(bg="darkred"))
+        self.cancelar_button.bind("<Leave>", lambda e: self.cancelar_button.config(bg="#C62020"))
+
+
+
+        # self.listo_button = tk.Button(self.menu_config_inicial, text="Confirmar", command=self.inicializar_parametros, 
+        #                          bg='#90EE90', activebackground='#7CFC00', bd=0, relief='groove', overrelief='groove', highlightbackground='black',)
+        
+        # # self.listo_button = tk.Button(self.menu_config_inicial, text="Confirmar", command=self.inicializar_parametros, 
+        # #                          bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
+
+        # self.listo_button.bind("<Enter>", lambda e: self.listo_button.config(bg="#7CFC00"))
+        # self.listo_button.bind("<Leave>", lambda e: self.listo_button.config(bg="#90EE90"))
+
+        # self.cancelar_button = tk.Button(self.menu_config_inicial, text="Cancelar", command=self.on_closing, bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
+        # self.cancelar_button.bind("<Enter>", lambda e: self.cancelar_button.config(bg="#87ceeb"))
+        # self.cancelar_button.bind("<Leave>", lambda e: self.cancelar_button.config(bg="#add8e6"))
 
         widgets_config_inicial = [
             (self.n_visitas_label, self.n_visitas_entry),
