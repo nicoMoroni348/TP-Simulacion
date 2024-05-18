@@ -281,10 +281,10 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
             fila[4] = "--"
         if fila[6] is None:
             fila[6] = "--"
-        fila[1] = round(fila[1],4)
-        fila[3] = round(fila[3],4)
-        fila[5] = round(fila[5], 4)
-        fila[7] = round(fila[7], 4)
+        fila[1] = round(fila[1],4) if fila[1] is not None else "--"
+        fila[3] = round(fila[3],4) if fila[3] is not None else "--"
+        fila[5] = round(fila[5], 4) if fila[5] is not None else "--"
+        fila[7] = round(fila[7], 4) if fila[7] is not None else "--"
         fila[-1] = round(fila[-1], 4)
 
         ws.append(fila)
@@ -338,10 +338,10 @@ def get_table(vector_estado, i, j, filepath="Tabla de simulacion.xlsx", auto_ope
         ultima_iteracion[4] = "--"
     if ultima_iteracion[6] is None:
         ultima_iteracion[6] = "--"
-    ultima_iteracion[1] = round(ultima_iteracion[1], 4)
-    ultima_iteracion[3] = round(ultima_iteracion[3], 4)
-    ultima_iteracion[5] = round(ultima_iteracion[5], 4)
-    ultima_iteracion[7] = round(ultima_iteracion[7], 4)
+    ultima_iteracion[1] = round(ultima_iteracion[1], 4) if ultima_iteracion[1] is not None else "--"
+    ultima_iteracion[3] = round(ultima_iteracion[3], 4) if ultima_iteracion[3] is not None else "--"
+    ultima_iteracion[5] = round(ultima_iteracion[5], 4) if ultima_iteracion[5] is not None else "--"
+    ultima_iteracion[7] = round(ultima_iteracion[7], 4) if ultima_iteracion[7] is not None else "--"
     ultima_iteracion[-1] = round(ultima_iteracion[-1], 4)
 
     last_row_sheet.append(ultima_iteracion)

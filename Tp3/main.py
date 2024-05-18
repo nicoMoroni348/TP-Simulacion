@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog, messagebox
 from simulacion_visita import simulacion_visitas
+from simulacion_visita_new import simulacion_visitas as simulacion_new
 from support import get_table, generar_numeros_aleatorios, validar_parametros,  \
                 validar_distribuciones, probabilidad_a_distribucion, validar_i_j,\
                 validar_n
@@ -73,8 +74,13 @@ class SimulationApp:
 
 
         
-        v_e = simulacion_visitas(vectores_numeros_aleatorios, self.n_visitas, 
-                            self.utilidad_por_suscripcion, self.probabilidad_puerta_abierta, 
+        # v_e = simulacion_visitas(vectores_numeros_aleatorios, self.n_visitas, 
+        #                     self.utilidad_por_suscripcion, self.probabilidad_puerta_abierta, 
+        #                     self.probabilidad_genero, self.probabilidad_venta_a_sra,
+        #                     self.probabilidad_venta_a_sr, self.distribucion_suscripciones_sra, 
+        #                     self.distribucion_suscripciones_sr)
+
+        v_e = simulacion_new(self.n_visitas, self.utilidad_por_suscripcion, self.probabilidad_puerta_abierta, 
                             self.probabilidad_genero, self.probabilidad_venta_a_sra,
                             self.probabilidad_venta_a_sr, self.distribucion_suscripciones_sra, 
                             self.distribucion_suscripciones_sr)
@@ -207,7 +213,8 @@ class SimulationApp:
 
 
     def mostrar_ventana_actualizacion_nuevos_rnd(self):
-        response = messagebox.showinfo("Actualización de Núeros Aleatorios", "¡Se han generado los nuevos números aleatorios")
+        # response = messagebox.showinfo("Actualización de Núeros Aleatorios", "¡Se han generado los nuevos números aleatorios")
+        response = messagebox.showinfo("Actualización de N", "¡Se ha actualizado en numero de visitas!")
         if response:
             print("Los datos se han actualizado correctamente.")
 
@@ -460,7 +467,7 @@ class SimulationApp:
         self.generar_simulacion_button.bind("<Enter>", lambda e: self.generar_simulacion_button.config(bg="#87ceeb"))
         self.generar_simulacion_button.bind("<Leave>", lambda e: self.generar_simulacion_button.config(bg="#add8e6"))
 
-        self.generar_nuevos_numeros_aleatorios_button = tk.Button(self.menu_principal, text="Generar nuevos números aleatorios", command=self.pedir_n_visitas, bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
+        self.generar_nuevos_numeros_aleatorios_button = tk.Button(self.menu_principal, text="Actualizar Cantidad de visitas", command=self.pedir_n_visitas, bg='#add8e6', activebackground='#87ceeb', bd=0, relief='groove', overrelief='groove', highlightbackground='black')
         self.generar_nuevos_numeros_aleatorios_button.grid(row= 4, pady=(10, 5), columnspan=3)
         self.generar_nuevos_numeros_aleatorios_button.bind("<Enter>", lambda e: self.generar_nuevos_numeros_aleatorios_button.config(bg="#87ceeb"))
         self.generar_nuevos_numeros_aleatorios_button.bind("<Leave>", lambda e: self.generar_nuevos_numeros_aleatorios_button.config(bg="#add8e6"))
@@ -479,7 +486,6 @@ class SimulationApp:
         self.menu_config_inicial.configure(bg='white')
         self.menu_config_inicial.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.menu_config_inicial.resizable(False, False)
-
         self.menu_config_inicial.iconbitmap('goat.ico')
 
 
