@@ -123,7 +123,7 @@ def simulacion_visitas(n_visitas, i, j, utilidad_por_suscripcion, probabilidad_g
 
         # Agregar fila al vector estado si esta en el rango seleccionado
         if j-1 <= iteracion <= j+i-2:
-            vector_estado.append(fila_visita[:])
+            vector_estado.append(fila_visita)
         
         # Guardar la última fila
         if iteracion == n_visitas-1:

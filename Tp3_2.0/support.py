@@ -12,7 +12,7 @@ def validar_i_j(i, j, n):
     
     if j > n:
         return False
-    if j < 0:
+    if j < 1:
         return False
     if i < 1:
         return False
