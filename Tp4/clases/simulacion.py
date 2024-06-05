@@ -4,13 +4,25 @@ import math
 
 from evento import Evento
 from cola import Cola
+from equipo import Equipo
+from alumno import Alumno
 
 class Simulacion:
     use_sine = False
-    def __init__(self, id):
+    def __init__(self, id, simulacion_anterior):
         self.id = id
+
+
+        if simulacion_anterior is None:
+            self.evento = Evento(0.0, "inicializacion")
+        
         self.evento: Evento = None
-        self.proximos_eventos = []
+        # proximos eventos que se generan en esta fila
+        self.proximos_eventos: Cola = None
+
+        self.alumnos_existentes = []
+
+        self.reloj = self.evento.hora_ocurrencia
 
 
         self.alumno_se_fue_y_no_espero = False
@@ -23,7 +35,6 @@ class Simulacion:
         self.nueva_llegada_alumno = None
 
         
-
 
         # Mantenimiento
         self.rnd_1_llegada_mantenimiento = None
@@ -38,23 +49,32 @@ class Simulacion:
         self.nuevo_fin_inscripcion = None
 
 
+        # Fin Mantenimiento
+        self.rnd_fin_mantenimiento = None
+        self.tiempo_hasta_proximo_fin_mantenimiento = None
+        self.nuevo_fin_mantenimiento = None
+
+
 
 
         # METRICAS
 
-        self.simulacion_anterior: Simulacion = None
+        self.simulacion_anterior: Simulacion = simulacion_anterior
+
         # Contador alumnos que llegan	
         # Contador alumnos que regresan más tarde	
         # Porcentaje alumnos que se van	
         # Contador alumnos atendidos	
         # Acumulador tiempos de espera	
         # Promedio tiempos de espera
-        self.contador_alumnos_llegan = 0
-        self.contador_alumnos_se_van_y_regresan_mas_tarde = 0
-        self.porcentaje_alumnos_se_van = 0.0
-        self.contador_alumnos_atendidos = 0
-        self.acumulador_tiempos_espera = 0.0
-        self.promedio_tiempos_espera = 0.0
+
+        self.contador_alumnos_llegan = None
+        self.contador_alumnos_se_van_y_regresan_mas_tarde = None
+        self.porcentaje_alumnos_se_van = None
+        self.contador_alumnos_atendidos = None
+        self.acumulador_tiempos_espera = None
+        self.promedio_tiempos_espera = None
+
 
 
     def agregar_proximo_evento(self, proximo_evento: Evento):
@@ -71,7 +91,7 @@ class Simulacion:
 
         self.rnd_llegada_alumno = random.random()
         self.tiempo_hasta_proxima_llegada = -media * self.rnd_llegada_alumno
-        self.nueva_llegada_alumno = self.tiempo_hasta_proxima_llegada + self.evento.hora_ocurrencia
+        self.nueva_llegada_alumno = self.tiempo_hasta_proxima_llegada + self.reloj
 
 
         # Agregar el evento a la lista de proximos eventos
@@ -94,12 +114,12 @@ class Simulacion:
         if Simulacion.use_sine:
             self.tiempo_hasta_proxima_llegada_mantenimiento = (math.sqrt(-2 * math.log(1 - self.rnd_1_llegada_mantenimiento)) * math.cos(2 * math.pi * self.rnd_2_llegada_mantenimiento)) * de + media
             Simulacion.use_sine = False
-            print("cosine used")
+            # print("cosine used")
         else:
             self.tiempo_hasta_proxima_llegada_mantenimiento = (math.sqrt(-2 * math.log(1 - self.rnd_1_llegada_mantenimiento)) * math.sin(2 * math.pi * self.rnd_2_llegada_mantenimiento)) * de + media
             Simulacion.use_sine = True
-            print("sine used")
-        self.nueva_llegada_mantenimiento = self.tiempo_hasta_proxima_llegada_mantenimiento + self.evento.hora_ocurrencia
+            # print("sine used")
+        self.nueva_llegada_mantenimiento = self.tiempo_hasta_proxima_llegada_mantenimiento + self.reloj
 
 
         # Agregar el evento a la lista de proximos eventos
@@ -116,7 +136,7 @@ class Simulacion:
         b = 8
         self.rnd_fin_inscripcion = random.random()
         self.tiempo_hasta_proximo_fin_inscripcion = a + (b-a) * self.rnd_fin_inscripcion
-        self.nuevo_fin_inscripcion = self.tiempo_hasta_proximo_fin_inscripcion + self.evento.hora_ocurrencia
+        self.nuevo_fin_inscripcion = self.tiempo_hasta_proximo_fin_inscripcion + self.reloj
 
 
         # Agregar el evento a la lista de proximos eventos
@@ -141,20 +161,46 @@ class Simulacion:
         self.agregar_proximo_evento(proximo_evento_fin_mantenimiento)
         
 
-    
-    def set_evento(self, evento):
-        self.evento = evento
 
-    def get_proximos_eventos(self):
-        return self.proximos_eventos
+    def manejar_retirada_alumno(self, cola: Cola):
+        if cola.get_longitud_cola() >= 5:
+            self.alumno_se_fue_y_no_espero = True
+            proximo_evento_fin_regreso_alumno = Evento(self.evento.hora_ocurrencia + 30, "fin_regreso_alumno")
+            self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
+
+
+
+
     
+    def actualizar_evento(self, evento):
+        # Actualiza el evento de la fila actual segun el atributo proximos eventos de la fila anterior
+        self.evento = self.simulacion_anterior.proximos_eventos.proximo_en_cola()
+
+    
+
+
+
+
+    def inicializar_metricas(self):
+        self.contador_alumnos_llegan = 0
+        self.contador_alumnos_se_van_y_regresan_mas_tarde = 0
+        self.porcentaje_alumnos_se_van = 0.0
+        self.contador_alumnos_atendidos = 0
+        self.acumulador_tiempos_espera = 0.0
+        self.promedio_tiempos_espera = 0.0
+
+
 
     def actualizar_metricas(self, cola):
         pass
 
+
+
+
+
     def actualizar_contador_alumnos_llegados(self):
         # Contador alumnos que llegan
-        if self.evento == "llegada_alumno":
+        if self.evento.tipo == "llegada_alumno":
             self.contador_alumnos_llegan = self.simulacion_anterior.contador_alumnos_llegan + 1
         else:
             self.contador_alumnos_llegan = self.simulacion_anterior.contador_alumnos_llegan
@@ -166,32 +212,111 @@ class Simulacion:
             self.contador_alumnos_atendidos = self.simulacion_anterior.contador_alumnos_atendidos
 
     
-    def actualizar_contador_alumnos_se_van_regresan_mas_tarde(self, cola):
-        if cola >= 5:
+    def actualizar_contador_alumnos_se_van_regresan_mas_tarde(self, cola: Cola):
+        if cola.get_longitud_cola() >= 5:
             self.contador_alumnos_se_van_y_regresan_mas_tarde = self.simulacion_anterior.contador_alumnos_se_van_y_regresan_mas_tarde + 1
         else:
             self.contador_alumnos_se_van_y_regresan_mas_tarde = self.simulacion_anterior.contador_alumnos_se_van_y_regresan_mas_tarde
 
 
-    def manejar_retirada_alumno(self, cola):
-        if cola >= 5:
-            self.alumno_se_fue_y_no_espero = True
-            proximo_evento_fin_regreso_alumno = Evento(self.evento.hora_ocurrencia + 30, "fin_regreso_alumno")
-            self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
+
+
+
+    
+    def actualizar_alumnos_existentes(self):
+        # Si no cambia nada
+        self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes
+
+
+
+    def crear_nuevo_alumno(self):
+        nuevo_alumno = Alumno(len(self.alumnos_existentes) + 1)
+        nuevo_alumno.set_hora_llegada = self.reloj
+
+        # Recorre todos los equipos libres
+        for equipo in self.equipos:
+
+            # Si hay un equipo libre
+            if equipo.esta_libre():
+                # Cambiar el estado del nuevo alumno
+                nuevo_alumno.set_estado = "siendo_atendido"
+                nuevo_alumno.set_hora_atencion = self.reloj
+
+                # Cambiar el estado del equipo ocupado por el alumno
+                equipo.set_estado = "ocupado_inscripcion"
+                # Se genera el proximo evento de fin de inscripcion
+                self.generar_proximo_fin_inscripcion()
+                equipo.hora_fin_uso = self.nuevo_fin_inscripcion
+        
+
+        # Faltan los siguientes Casos de creacion de alumno
+        
+        # Si no hay equipos libres -> Se mete en la cola 
+        # Si hay +5 alumnos en la cola  -> Se va y regresa en 30 mins
+        # Si ....
+
+
+
+
+                
 
 
 
 
 
-    def realizar_simulacion(self, cola):
+
+
+
+
+
+    def realizar_simulacion(self):
         # Este metodo haria la simulacion a partir del evento que tiene como atributo
 
-        
-        pass
+
         
 
 
+
+        if self.evento.tipo == "inicializacion":
+            
+            # Primera proxima llegada
+            self.generar_proxima_llegada_alumno()
+            # Primera proxima llegada de mantenimiento
+            self.generar_proxima_llegada_mantenimiento()
+
+
+            # Creamos los equipos
+            self.equipos = Equipo.crear_equipos()
+            # Creamos la cola de alumnos
+            self.cola_alumnos = Cola()
+
+            # Inicializamos las metricas
+            self.inicializar_metricas()
+
+            
+
+
+
+        elif self.evento.tipo == "llegada_alumno":
+            self.generar_proxima_llegada_alumno()
+
+            # Hay que ver que pasa con este metodo
+            self.crear_nuevo_alumno()
+
+
+            
+
+
+            # Revisar mas metricas
+            self.actualizar_contador_alumnos_llegados() 
+            self.manejar_retirada_alumno()
+
+            
+
+            
         
+
+            
 
 
 
