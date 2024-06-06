@@ -18,3 +18,14 @@ class Alumno:
             return "Esperando atención"
         else:
             return "Siendo atendido"
+        
+
+    def set_estado(self, estado):
+        self.estado = estado
+
+    def set_hora_atencion(self, hora_atencion):
+        self.hora_atencion = hora_atencion
+
+    def set_hora_llegada(self, hora_llegada):
+        self.hora_llegada = hora_llegada
+        

@@ -6,6 +6,7 @@ from evento import Evento
 from cola import Cola
 from equipo import Equipo
 from alumno import Alumno
+from inscripcion import Inscripcion
 
 class Simulacion:
     use_sine = False
@@ -21,22 +22,28 @@ class Simulacion:
         self.proximos_eventos: Cola = None
 
         self.alumnos_existentes = []
+        self.inscripciones_en_curso = []
+        self.equipos = []
 
         self.reloj = self.evento.hora_ocurrencia
 
 
         self.alumno_se_fue_y_no_espero = False
 
+        self.simulacion_anterior: Simulacion = simulacion_anterior
 
 
-        # Alumnos
+
+
+
+        # Llegadas Alumnos
         self.rnd_llegada_alumno = None
         self.tiempo_hasta_proxima_llegada = None
         self.nueva_llegada_alumno = None
 
         
 
-        # Mantenimiento
+        # Llegadas Mantenimiento
         self.rnd_1_llegada_mantenimiento = None
         self.rnd_2_llegada_mantenimiento = None
         self.tiempo_hasta_proxima_llegada_mantenimiento = None
@@ -59,7 +66,6 @@ class Simulacion:
 
         # METRICAS
 
-        self.simulacion_anterior: Simulacion = simulacion_anterior
 
         # Contador alumnos que llegan	
         # Contador alumnos que regresan más tarde	
@@ -80,6 +86,9 @@ class Simulacion:
     def agregar_proximo_evento(self, proximo_evento: Evento):
         self.proximos_eventos.append(proximo_evento)
         self.proximos_eventos.sort(key=lambda x: x.hora_ocurrencia)
+
+    def agregar_inscripcion_en_curso(self, inscripcion):
+        self.inscripciones_en_curso.append(inscripcion)
 
 
 
@@ -159,6 +168,11 @@ class Simulacion:
         # Agregar el evento a la lista de proximos eventos
         proximo_evento_fin_mantenimiento = Evento(self.nuevo_fin_mantenimiento, "fin_mantenimiento")
         self.agregar_proximo_evento(proximo_evento_fin_mantenimiento)
+
+
+    def generar_evento_regreso_alumno(self):
+        proximo_evento_fin_regreso_alumno = Evento(self.evento.hora_ocurrencia + 30, "fin_regreso_alumno")
+        self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
         
 
 
@@ -233,26 +247,72 @@ class Simulacion:
         nuevo_alumno = Alumno(len(self.alumnos_existentes) + 1)
         nuevo_alumno.set_hora_llegada = self.reloj
 
+        hay_equipo_libre = False
+
         # Recorre todos los equipos libres
         for equipo in self.equipos:
 
+            equipo: Equipo = equipo
+
             # Si hay un equipo libre
             if equipo.esta_libre():
+                # Entra directo a ser atendido
+
                 # Cambiar el estado del nuevo alumno
-                nuevo_alumno.set_estado = "siendo_atendido"
+                nuevo_alumno.set_estado("siendo_atendido")
                 nuevo_alumno.set_hora_atencion = self.reloj
 
                 # Cambiar el estado del equipo ocupado por el alumno
-                equipo.set_estado = "ocupado_inscripcion"
+                equipo.set_estado("ocupado_inscripcion")
+
+                # Crear un objeto de inscripcion para llevar el registro de que alumno esta en que equipo
+                inscripcion = Inscripcion(Inscripcion.proximo_id())
+                # Setear los atributos corrrespondientes
+                inscripcion.set_alumno(nuevo_alumno)
+                inscripcion.set_equipo(equipo)
+
                 # Se genera el proximo evento de fin de inscripcion
                 self.generar_proximo_fin_inscripcion()
-                equipo.hora_fin_uso = self.nuevo_fin_inscripcion
-        
+                equipo.set_hora_fin_uso(self.nuevo_fin_inscripcion)
 
-        # Faltan los siguientes Casos de creacion de alumno
+                # Setearle a la inscripcion la hora del fin de la inscripcion (no se bien para que)
+                inscripcion.set_hora_fin(self.nuevo_fin_inscripcion)
+
+                hay_equipo_libre = True
+
         
-        # Si no hay equipos libres -> Se mete en la cola 
-        # Si hay +5 alumnos en la cola  -> Se va y regresa en 30 mins
+        if not hay_equipo_libre:    
+            # Si hay +5 alumnos en la cola  -> Se va y regresa en 30 mins         
+            if self.cola_alumnos.get_longitud_cola() >= 5:
+                # El alumno se va y regresa en 30 minutos 
+                
+                # EL alumno de esta iteracion se fue y no espero
+                self.alumno_se_fue_y_no_espero = True
+                # Actualizamos estado
+                nuevo_alumno.set_estado("esperando_desocupacion")
+                # Creamos evento y agregamos a la lista
+                self.generar_evento_regreso_alumno()
+                
+                # ACA HABRIA QUE VER si se debe guardar el objeto del alumno o no (me parece que no, pero no se, pasa que alto viaje si si)
+            
+
+            # Si no hay equipos libres -> Se mete en la cola
+            else:
+
+                # Si hay menos de 5 personas esperando en la cola
+
+                # seteamos el estado a esperando_atencion
+                nuevo_alumno.set_estado("esperando_atencion")
+                # La hora de atencion se debe setear cuando se atienda efectivamente a ese alumno
+
+                # Agregamos el alumno a la cola
+                self.cola_alumnos.agregar_a_cola(nuevo_alumno)
+                
+        
+        
+        
+        # Faltan los siguientes Casos de creacion de alumno
+       
         # Si ....
 
 
@@ -304,19 +364,37 @@ class Simulacion:
             self.crear_nuevo_alumno()
 
 
-            
-
-
             # Revisar mas metricas
             self.actualizar_contador_alumnos_llegados() 
             self.manejar_retirada_alumno()
 
-            
 
-            
+        elif self.evento.tipo == "llegada_mantenimiento":
+            pass
+
         
+        elif self.evento.tipo == "fin_inscripcion":
+            pass
 
-            
+
+
+        elif self.evento.tipo == "fin_regreso_alumno":
+            pass
+
+
+        elif self.evento.tipo == "fin_mantenimiento":
+            pass
 
 
 
+
+
+
+
+
+
+
+
+
+
+        # Actualizacion de metricas y no se que mas

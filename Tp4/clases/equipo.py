@@ -17,3 +17,14 @@ class Equipo:
             Equipo.equipos.append(equipo)
         
         return Equipo.equipos
+    
+
+
+    def esta_libre(self):
+        return self.estado == "libre"
+    
+    def set_hora_fin_uso(self, hora_fin_uso):
+        self.hora_fin_uso = hora_fin_uso
+
+    def set_estado(self, estado):
+        self.estado = estado
