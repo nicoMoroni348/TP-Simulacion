@@ -10,11 +10,7 @@ To do:
 - Terminar la actualizacion de metricas
 - Terminar la funcion de realizar la simulacion
 
-- Crear metodo para gestionar cada tipo de evento y todas las operaciones que haga (como esta empezado con la creacion/llegada de alumnos) 
-- La cola no es un numero, La cola tiene Objetos de alumno
-- Terminar La gestion del objeto de mantenimiento en la cola 
-
-
+- Terminar evento fin inscripcion
 
 
 La simulacion es literalmente la fila de la tabla, conoce a su anterior, tiene los eventos proximos a ocurrir, los 6 equipos y los alumnos que esten activos

@@ -17,7 +17,6 @@ class Equipo:
             Equipo.equipos.append(equipo)
         
         return Equipo.equipos
-    
 
 
     def esta_libre(self):

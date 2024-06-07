@@ -7,6 +7,8 @@ from cola import Cola
 from equipo import Equipo
 from alumno import Alumno
 from inscripcion import Inscripcion
+from persona_mantenimiento import PersonaMantenimiento
+from proceso_mantenimiento import ProcesoMantenimiento
 
 class Simulacion:
     use_sine = False
@@ -20,10 +22,14 @@ class Simulacion:
         self.evento: Evento = None
         # proximos eventos que se generan en esta fila
         self.proximos_eventos: Cola = None
+        self.cola_alumnos: Cola = None
+        self.cola_mantenimiento: Cola = None
 
         self.alumnos_existentes = []
+        self.alumnos_pendientes_regresar = []
         self.inscripciones_en_curso = []
         self.equipos = []
+        self.persona_mantenimiento: PersonaMantenimiento = None
 
         self.reloj = self.evento.hora_ocurrencia
 
@@ -163,7 +169,7 @@ class Simulacion:
         b = 10
         self.rnd_fin_mantenimiento = random.random()
         self.tiempo_hasta_proximo_fin_mantenimiento = a + (b-a) * self.rnd_fin_mantenimiento
-        self.nuevo_fin_mantenimiento = self.tiempo_hasta_proximo_fin_mantenimiento + self.evento.hora_ocurrencia
+        self.nuevo_fin_mantenimiento = self.tiempo_hasta_proximo_fin_mantenimiento + self.reloj
 
         # Agregar el evento a la lista de proximos eventos
         proximo_evento_fin_mantenimiento = Evento(self.nuevo_fin_mantenimiento, "fin_mantenimiento")
@@ -171,22 +177,20 @@ class Simulacion:
 
 
     def generar_evento_regreso_alumno(self):
-        proximo_evento_fin_regreso_alumno = Evento(self.evento.hora_ocurrencia + 30, "fin_regreso_alumno")
+        proximo_evento_fin_regreso_alumno = Evento(self.reloj + 30, "fin_regreso_alumno")
         self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
-        
 
+    def agregar_alumno_pendiente_regresar(self, alumno: Alumno):
+        alumno.set_hora_regreso(self.reloj + 30)
+        self.alumnos_pendientes_regresar.append(alumno)
 
-    def manejar_retirada_alumno(self, cola: Cola):
-        if cola.get_longitud_cola() >= 5:
-            self.alumno_se_fue_y_no_espero = True
-            proximo_evento_fin_regreso_alumno = Evento(self.evento.hora_ocurrencia + 30, "fin_regreso_alumno")
-            self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
-
-
+    
+    def siguiente_alumno_pendiente_regresar(self):
+        return self.alumnos_pendientes_regresar.pop(0)
 
 
     
-    def actualizar_evento(self, evento):
+    def actualizar_evento(self):
         # Actualiza el evento de la fila actual segun el atributo proximos eventos de la fila anterior
         self.evento = self.simulacion_anterior.proximos_eventos.proximo_en_cola()
 
@@ -234,17 +238,26 @@ class Simulacion:
 
 
 
-
-
     
-    def actualizar_alumnos_existentes(self):
-        # Si no cambia nada
-        self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes
+    def agregar_alumno_existente(self, alumno):
+        # self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes + [alumno]
+        self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes[:]
+        self.alumnos_existentes.append(alumno)
 
 
 
-    def crear_nuevo_alumno(self):
-        nuevo_alumno = Alumno(len(self.alumnos_existentes) + 1)
+
+    def crear_nuevo_alumno(self, es_nuevo=True):
+
+        # Si es un alumno que recién entra a la simulación y no es un alumno que regresó:
+        if es_nuevo:
+            # Si el alumno recién entra a la simulación, crea el objeto
+            nuevo_alumno = Alumno(len(self.alumnos_existentes) + 1)
+
+        else:
+            # Si es un alumno que regreso de la espera de desocupacion
+            nuevo_alumno = self.siguiente_alumno_pendiente_regresar()
+        
         nuevo_alumno.set_hora_llegada = self.reloj
 
         hay_equipo_libre = False
@@ -259,11 +272,16 @@ class Simulacion:
                 # Entra directo a ser atendido
 
                 # Cambiar el estado del nuevo alumno
-                nuevo_alumno.set_estado("siendo_atendido")
+                # nuevo_alumno.set_estado("siendo_atendido")
                 nuevo_alumno.set_hora_atencion = self.reloj
+
+                nuevo_alumno.set_estado("siendo_atendido")
 
                 # Cambiar el estado del equipo ocupado por el alumno
                 equipo.set_estado("ocupado_inscripcion")
+
+                # Se genera el proximo evento de fin de inscripcion
+                self.generar_proximo_fin_inscripcion()
 
                 # Crear un objeto de inscripcion para llevar el registro de que alumno esta en que equipo
                 inscripcion = Inscripcion(Inscripcion.proximo_id())
@@ -271,8 +289,7 @@ class Simulacion:
                 inscripcion.set_alumno(nuevo_alumno)
                 inscripcion.set_equipo(equipo)
 
-                # Se genera el proximo evento de fin de inscripcion
-                self.generar_proximo_fin_inscripcion()
+                
                 equipo.set_hora_fin_uso(self.nuevo_fin_inscripcion)
 
                 # Setearle a la inscripcion la hora del fin de la inscripcion (no se bien para que)
@@ -288,12 +305,17 @@ class Simulacion:
                 
                 # EL alumno de esta iteracion se fue y no espero
                 self.alumno_se_fue_y_no_espero = True
+
                 # Actualizamos estado
                 nuevo_alumno.set_estado("esperando_desocupacion")
+                # Seteamos la hora de regreso del alumno
+
                 # Creamos evento y agregamos a la lista
                 self.generar_evento_regreso_alumno()
+
+                self.agregar_alumno_pendiente_regresar(nuevo_alumno)
                 
-                # ACA HABRIA QUE VER si se debe guardar el objeto del alumno o no (me parece que no, pero no se, pasa que alto viaje si si)
+                
             
 
             # Si no hay equipos libres -> Se mete en la cola
@@ -309,11 +331,68 @@ class Simulacion:
                 self.cola_alumnos.agregar_a_cola(nuevo_alumno)
                 
         
+
+
+        # Agregar alumno a la lista de alumnos
+        self.agregar_alumno_existente(nuevo_alumno)
+
+    
+
+    def manejar_proceso_mantenimiento(self):
+        # Este metodo se ejecuta en cada llegada de mantenimiento
+        # y cada vez que se desocupa un equipo siempre y cuando la cola de mantenimiento no este vacia
+        # Y cada vez que termine de mantener un equipo (si quedan equipos pendientes)
+
+        # self.persona_mantenimiento.set_hora_llegada(self.reloj)
+
+        # Si terminó el mantenimiento a TODAS las máquinas
+        if not self.persona_mantenimiento.maquinas_restantes: 
+            # Resetea los equipos restantes en [1, 2, 3, 4, 5, 6]
+            self.persona_mantenimiento.resetear_equipos_a_mantener()
+            
+            # Genera la próxima llegada de la persona de mantenimiento
+            self.generar_proxima_llegada_mantenimiento()
         
+        hay_equipo_libre = False
+
+        # Recorre todos los equipos libres que FALTAN POR MANTENER
+        for equipo in self.equipos:
+
+            equipo: Equipo = equipo
+
+            # Si hay un equipo libre
+            if equipo.esta_libre() and equipo.id in self.persona_mantenimiento.maquinas_restantes: 
+
+                hay_equipo_libre = True
+
+                # Generar evento fin de mantenimiento
+                self.generar_proximo_fin_mantenimiento()
+
+                # actualizar estado equipo
+                equipo.set_estado("ocupado_mantenimiento")
+                
+                # Actualizar estado de persona de mantenimiento
+                self.persona_mantenimiento.set_estado('en_mantenimiento')
+
+                # Como inicia un proceso de mantenimiento, quita el equipo de su lista de equipos pendientes a mantener
+                self.persona_mantenimiento.quitar_equipo_mantenido(equipo.id)
+                
+                # Crear objeto de proceso de mantenimiento
+                proceso_mantenimiento = ProcesoMantenimiento(ProcesoMantenimiento.proximo_id())
+                proceso_mantenimiento.set_equipo(equipo)
+                proceso_mantenimiento.set_persona_mantenimiento(self.persona_mantenimiento)
+                proceso_mantenimiento.set_hora_fin(self.nuevo_fin_mantenimiento)
+                
+
         
-        # Faltan los siguientes Casos de creacion de alumno
-       
-        # Si ....
+        if not hay_equipo_libre:
+            # Agregamos el personal de mantenimiento a la cola prioritaria
+            self.cola_mantenimiento.agregar_a_cola(self.persona_mantenimiento)
+
+            # Actualizamos su estado a Esperando Atencion
+            self.persona_mantenimiento.set_estado('esperando_atencion')
+
+            
 
 
 
@@ -342,13 +421,18 @@ class Simulacion:
             # Primera proxima llegada
             self.generar_proxima_llegada_alumno()
             # Primera proxima llegada de mantenimiento
-            self.generar_proxima_llegada_mantenimiento()
-
+            self.generar_proxima_llegada_mantenimiento() 
 
             # Creamos los equipos
             self.equipos = Equipo.crear_equipos()
+
+            # Creamos la persona de mantenimiento
+            self.persona_mantenimiento = PersonaMantenimiento()
+
+
             # Creamos la cola de alumnos
             self.cola_alumnos = Cola()
+            
 
             # Inicializamos las metricas
             self.inicializar_metricas()
@@ -364,26 +448,33 @@ class Simulacion:
             self.crear_nuevo_alumno()
 
 
-            # Revisar mas metricas
+            # Revisar mas metricas (DESPUES)
             self.actualizar_contador_alumnos_llegados() 
-            self.manejar_retirada_alumno()
+            
 
 
         elif self.evento.tipo == "llegada_mantenimiento":
-            pass
+            self.manejar_proceso_mantenimiento()
+
+
+            # Ver que mas falta aca
 
         
         elif self.evento.tipo == "fin_inscripcion":
+            # Se desocupa un equipo -> si la cola de mantenimiento tiene 1 directametne lo asigna a este equipo
+            # No olvidarse de priorizar la cola de la persona de mantenimiento            
             pass
 
 
 
         elif self.evento.tipo == "fin_regreso_alumno":
-            pass
+            self.crear_nuevo_alumno(es_nuevo=False)
+
 
 
         elif self.evento.tipo == "fin_mantenimiento":
-            pass
+            self.manejar_proceso_mantenimiento()
+
 
 
 

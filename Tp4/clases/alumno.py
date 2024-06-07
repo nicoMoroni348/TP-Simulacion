@@ -7,6 +7,8 @@ class Alumno:
         self.estado = None
         self.hora_llegada = None
         self.hora_atencion = None
+
+        self.hora_regreso = None
     
     def __str__(self):
         return f"Alumno {self.id} - {self.estado} - {self.hora_llegada} - {self.hora_atencion}"
@@ -28,4 +30,7 @@ class Alumno:
 
     def set_hora_llegada(self, hora_llegada):
         self.hora_llegada = hora_llegada
+
+    def set_hora_regreso(self, hora_regreso):
+        self.hora_regreso = hora_regreso
         
