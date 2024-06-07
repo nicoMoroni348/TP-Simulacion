@@ -1,16 +1,32 @@
 ** Logica (sobre todo archivo simulacion.py, y vector_estado.py) **
 
-Terminar la actualizacion de metricas
-Terminar la funcion de realizar la simulacion
-Contemplar todos los casos posibles de llegadas, elementos en la cola, etc, etc
-Gestionar la atencion, hora de atencion, y los objetos de alumnos en si 
-La cola no es un numero, La cola tiene Objetos ya sea de alumno o mantenimiento
-Terminar La gestion del objeto de mantenimiento en la cola 
-
-Ver donde relacionar la cola con la simulacion con los objetos (alumn, mantenimiento y equipo)
+x hechisimo  Contemplar todos los casos posibles de llegadas (creacion alumnos, estan comentados ahi los casos)
 
 
-Capaz el vector_estado puede tener equipos
 
-Ver como hacer con los alumnos y sus atributos, 
-    a donde pertenecen y quien los gestiona
+To do:
+
+
+- Terminar la actualizacion de metricas
+- Terminar la funcion de realizar la simulacion
+
+- Crear metodo para gestionar cada tipo de evento y todas las operaciones que haga (como esta empezado con la creacion/llegada de alumnos) 
+- La cola no es un numero, La cola tiene Objetos de alumno
+- Terminar La gestion del objeto de mantenimiento en la cola 
+
+
+
+
+La simulacion es literalmente la fila de la tabla, conoce a su anterior, tiene los eventos proximos a ocurrir, los 6 equipos y los alumnos que esten activos
+Todo en el instante de la fila (ademas conoce lo que estaba antes)
+Entonces cada vez que creamos una fila, tenemos que actualizarla segun el evento que se de en esta y los otros valores y atributos que tenga la fila anterior
+
+ASI SI
+En vector estado se va a ir pasando por parametro la fila anterior cada vez que se crea una fila, ademas se guardan SOLO las que tan pasando la hora j y etc
+
+
+
+2 Opciones para manejar el tema de saber que alumno esta en cada equipo, que alumno se fuere para regresar en 30 minutos, que alumno fue el que termino su atencion
+
+ - Agregar al evento atributos que puedan estar o no definidos de ya sea alumno asociado, equipo asociado, o lo que sea 
+ - Agregar clases que funcionen como tablas intermedias para cada tipo de evento de fin de algo (Como la inscripcion para fin_inscripcion, mant, y regreso)
