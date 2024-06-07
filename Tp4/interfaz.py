@@ -14,8 +14,8 @@ def main(page: ft.Page):
 
 
     def mostrar_resultados(porcentaje, promedio):
-        resultado1.value = f"{resultado1.value} {porcentaje:.2f}%"
-        resultado2.value = f"{resultado2.value} {promedio}"
+        res1.value = f"{porcentaje/100}%"
+        res2.value = f"{promedio} minutos"
         page.update()
 
 
@@ -41,8 +41,7 @@ def main(page: ft.Page):
         """
 
         # Mostrar resultados
-        page.add(resultado1,
-            resultado2)
+        page.add(resultado1, resultado2)
 
         mostrar_resultados(1, 2)
 
@@ -60,8 +59,14 @@ def main(page: ft.Page):
     # COMPONENTES DE LA INTERFAZ
     
     # Resultados
-    resultado1 = ft.Text("Porcentaje de alumnos que se van para regresar más tarde:", color="#45818e", size=25, weight=ft.FontWeight.BOLD)
-    resultado2 = ft.Text("Tiempo promedio de espera de los alumnos:", color="#45818e", size=25, weight=ft.FontWeight.BOLD)
+    res1 = ft.Text("-", color="#4581e5", size=25, weight=ft.FontWeight.BOLD)
+    resultado1 = ft.Row(controls=[ft.Text("Porcentaje de alumnos que se van para regresar más tarde:", color=ft.colors.BLACK, size=25, weight=ft.FontWeight.BOLD),
+                                  res1], alignment=ft.MainAxisAlignment.CENTER)
+    
+    res2 = ft.Text("-", color="#4581e5", size=25, weight=ft.FontWeight.BOLD)
+    resultado2 = ft.Row(controls=[ft.Text("Tiempo promedio de espera de los alumnos:", color=ft.colors.BLACK, size=25, weight=ft.FontWeight.BOLD),
+                                  res2], alignment=ft.MainAxisAlignment.CENTER) 
+
 
     # Ventanas de error
     ventana_error = ft.AlertDialog(
@@ -74,8 +79,8 @@ def main(page: ft.Page):
     )
 
     # Input parámetros problema
-    demora_inscripcion_min_input = ft.TextField(value=5, width=80, color=ft.colors.BLACK)
-    demora_inscripcion_max_input = ft.TextField(value=8, width=80, color=ft.colors.BLACK)
+    demora_inscripcion_min_input = ft.TextField(value=5, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    demora_inscripcion_max_input = ft.TextField(value=8, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     demora_inscripcion_input = [ft.Text("Demora de Inscripción:", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
                                 ft.Text("Entre", color=ft.colors.BLACK), 
                                 demora_inscripcion_min_input,
@@ -83,8 +88,8 @@ def main(page: ft.Page):
                                 demora_inscripcion_max_input,
                                 ft.Text("minutos", color=ft.colors.BLACK)]
 
-    demora_mantenimiento_min_input = ft.TextField(value=3, width=80, color=ft.colors.BLACK)
-    demora_mantenimiento_max_input = ft.TextField(value=10, width=80, color=ft.colors.BLACK)
+    demora_mantenimiento_min_input = ft.TextField(value=3, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    demora_mantenimiento_max_input = ft.TextField(value=10, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     demora_mantenimiento_input = [ft.Text("Demora de Mantenimiento:", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
                                   ft.Text("Entre", color=ft.colors.BLACK), 
                                   demora_mantenimiento_min_input,
@@ -92,43 +97,37 @@ def main(page: ft.Page):
                                   demora_mantenimiento_max_input,
                                   ft.Text("minutos", color=ft.colors.BLACK)]
     
-    media_llegadas_alumnos_input = ft.TextField(value=2, width=80, color=ft.colors.BLACK)
+    media_llegadas_alumnos_input = ft.TextField(value=2, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     llegadas_alumnos_input = [ft.Text("Tiempo entre Llegadas de Alumnos:", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
-                                  ft.Text("Media:", color=ft.colors.BLACK), 
+                                  ft.Text("Media =", color=ft.colors.BLACK), 
                                   media_llegadas_alumnos_input]
     
-    media_regreso_mantenimiento_input = ft.TextField(value=1, width=80, color=ft.colors.BLACK)
-    desviacion_regreso_mantenimiento_input = ft.TextField(value=3, width=80, color=ft.colors.BLACK)
+    media_regreso_mantenimiento_input = ft.TextField(value=1, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    desviacion_regreso_mantenimiento_input = ft.TextField(value=3, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     regreso_mantenimiento_input = [ft.Text("Tiempo entre Mantenimientos:", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
                                   media_regreso_mantenimiento_input,
-                                  ft.Text("hora ±", color=ft.colors.BLACK), 
+                                  ft.Text("±", color=ft.colors.BLACK), 
                                   desviacion_regreso_mantenimiento_input,
                                   ft.Text("minutos", color=ft.colors.BLACK)]
 
+    
     # Input parámetros simulación
-    tiempo_input = ft.TextField(width=80, color=ft.colors.BLACK)
-    unidad_de_medida_input = ft.Dropdown(
-        width=80,
-        options=[
-            ft.dropdown.Option("Horas"),
-            ft.dropdown.Option("Minutos")
-        ],
-        color=ft.colors.GREY_500
-    )
+    tiempo_input = ft.TextField(height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     tiempo_simulacion_input = [ft.Text("Tiempo a simular (x):", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
-                            tiempo_input,
-                            unidad_de_medida_input]
+                               tiempo_input]
 
-    i_input = ft.TextField(label="i =", label_style=ft.TextStyle(color=ft.colors.GREY_500), width=80, color=ft.colors.BLACK)
-    j_input = ft.TextField(label="j =", label_style=ft.TextStyle(color=ft.colors.GREY_500), width=80, color=ft.colors.BLACK)
+    i_input = ft.TextField(label="i =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    j_input = ft.TextField(label="j =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     i_j_input = [ft.Text("Mostrar", color=ft.colors.BLACK),
                  i_input,
-                 ft.Text("iteraciones a partir de la hora", color=ft.colors.BLACK),
+                 ft.Text("iteraciones a partir del minuto", color=ft.colors.BLACK),
                  j_input]
 
+    
     # Botones
     simular_button = ft.ElevatedButton(text="Simular", on_click=simular)
 
+    
     # Disposición de componentes
     page.add(
         ft.Row(controls=demora_inscripcion_input, alignment=ft.MainAxisAlignment.CENTER),
@@ -140,6 +139,7 @@ def main(page: ft.Page):
         ft.Row(controls=i_j_input, alignment=ft.MainAxisAlignment.CENTER),
         simular_button,
     )
+
 
 # Ejecutar la aplicación
 ft.app(target=main)
