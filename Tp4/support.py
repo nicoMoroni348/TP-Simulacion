@@ -105,7 +105,7 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
 
     # Combinar celdas para los encabezados
     merge_ranges = [
-        ('A1:A2'), ('B1:B2'), ('C1:C2'), ('D1:F1'),  ('G1:J1'), ('K1:L1'), ('M1:N1'), ('O1:P1'), ('Q1:R1'), ('S1:T1'), ('U1:V1'), ('W1:X1'), ('Y1:Z1'), ('AA1:AB1'), ('AC1:AD1'), ('AE1:AJ1'), 
+        ('A1:A5'), ('B1:B5'), ('C1:C5'), ('D1:F1'),  ('G1:J1'), ('K1:L1'), ('M1:N1'), ('O1:P1'), ('Q1:R1'), ('S1:T1'), ('U1:V1'), ('W1:X1'), ('Y1:Z1'), ('AA1:AB1'), ('AC1:AD1'), ('AE1:AJ1'), ('D2:D5'), ('E2:E5'), ('F2:F5'), ('G2:G5'), ('H2:H5'), ('I2:I5'), ('J2:J5'), ('K2:K5'), ('L2:L5'), ('M2:M5'), ('N2:N5'), ('O2:O5'), ('P2:P5'), ('Q2:Q5'), ('R2:R5'), ('S2:S5'), ('T2:T5'), ('U2:U5'), ('V2:V5'), ('W2:W5'), ('X2:X5'), ('Y2:Y5'), ('Z2:Z5'), ('AA2:AA5'), ('AB2:AB5'), ('AC2:AC5'), ('AD2:AD5'), ('AE2:AE5'), ('AF2:AF5'), ('AG2:AG5'), ('AH2:AH5'), ('AI2:AI5'), ('AJ2:AJ5')
     ]
 
     for merge_range in merge_ranges:
@@ -114,9 +114,15 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
     # Formatear celdas
     for row in ws.iter_rows(min_row=1, max_row=2):
         for cell in row:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
+            cell.alignment = Alignment(horizontal='center', vertical='center', shrink_to_fit=True, wrap_text=True)
             cell.fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
             cell.font = Font(bold=True)
+            cell.border = opxl.styles.Border(
+                        left=opxl.styles.Side(border_style="thin", color="000000"),
+                        right=opxl.styles.Side(border_style="thin", color="000000"),
+                        top=opxl.styles.Side(border_style="thin", color="000000"),
+                        bottom=opxl.styles.Side(border_style="thin", color="000000")
+                        )
             # Ajustar el tamaño de las celdas al contenido
             for column_cells in ws.columns:
                 max_length = 0
