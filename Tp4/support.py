@@ -4,89 +4,88 @@ import openpyxl as opxl
 import os
 from openpyxl.styles import Alignment, Border, Side, Font, PatternFill
 
+# def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", auto_open=True):
 
-def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", auto_open=True):
+#     # Creamos el writer para escribir sobre el excel
+#     writer = pd.ExcelWriter(filepath, engine="xlsxwriter") 
 
-    # Creamos el writer para escribir sobre el excel
-    writer = pd.ExcelWriter(filepath, engine="xlsxwriter") 
-
-    # Creamos el dataframe de pandas para escribirlo luego en el excel
-    data_frame = pd.DataFrame(vector_estado[j-1:i+j-1])
-    data_frame.columns = [
-        'F', 'Evento', 'Reloj', "Rnd_llegada_alumno", 
-         'tiempo_llegada_alumno', "Proxima_llegada_alumno", 'Rnd1_llegada_mantenimiento', "Rnd2_llegada_mantenimiento", 
-        'Proxima_llegada_mantenimiento', 'alumno_se_queda', 'Hora_regreso', 
-        'Cola_alumnos', 'Cola_mantenimiento',
-        'Rnd_fin_inscripcion', 'tiempo_fin_inscripcion', 'Rnd_fin_mantenimiento', 'tiempo_fin_mantenimiento',
-        'Equipo1_estado', 'Equipo1_Hora_fin', 'Equipo2_estado', 'Equipo2_Hora_fin',
-        'Equipo3_estado', 'Equipo3_Hora_fin', 'Equipo4_estado', 'Equipo4_Hora_fin',
-        'Equipo5_estado', 'Equipo5_Hora_fin', 'Equipo6_estado', 'Equipo6_Hora_fin',
-        'Contador_alumnos', 'Contador_alumnos_que_regresan',
-        'Porcentaje_alumnos_que_regresan', 'Porcentaje_alumnos_que_se_van', 'Contador_alumnos_atendidos', 'Acumulador_tiempo_espera', 'Promedio_tiempo_espera',
-        ]
+#     # Creamos el dataframe de pandas para escribirlo luego en el excel
+#     data_frame = pd.DataFrame(vector_estado[j-1:i+j-1])
+#     data_frame.columns = [
+#         'F', 'Evento', 'Reloj', "Rnd_llegada_alumno", 
+#          'tiempo_llegada_alumno', "Proxima_llegada_alumno", 'Rnd1_llegada_mantenimiento', "Rnd2_llegada_mantenimiento", 
+#         'Proxima_llegada_mantenimiento', 'alumno_se_queda', 'Hora_regreso', 
+#         'Cola_alumnos', 'Cola_mantenimiento',
+#         'Rnd_fin_inscripcion', 'tiempo_fin_inscripcion', 'Rnd_fin_mantenimiento', 'tiempo_fin_mantenimiento',
+#         'Equipo1_estado', 'Equipo1_Hora_fin', 'Equipo2_estado', 'Equipo2_Hora_fin',
+#         'Equipo3_estado', 'Equipo3_Hora_fin', 'Equipo4_estado', 'Equipo4_Hora_fin',
+#         'Equipo5_estado', 'Equipo5_Hora_fin', 'Equipo6_estado', 'Equipo6_Hora_fin',
+#         'Contador_alumnos', 'Contador_alumnos_que_regresan',
+#         'Porcentaje_alumnos_que_regresan', 'Porcentaje_alumnos_que_se_van', 'Contador_alumnos_atendidos', 'Acumulador_tiempo_espera', 'Promedio_tiempo_espera',
+#         ]
     
     
-    data_frame.to_excel(writer, sheet_name="Vector Estado", index=False)
+#     data_frame.to_excel(writer, sheet_name="Vector Estado", index=False)
 
 
-    # print(data_frame)
+#     # print(data_frame)
 
 
 
 
-    # Tomamos la hoja creada con pandas y formateamos las columnas para que sea legible
-    worksheet = writer.sheets["Vector Estado"]
-    # cell_format = workbook.add_format({'num_format': '#.####'})
-    # cell_format.set_  # Enable text wrapping in cells (optional)
+#     # Tomamos la hoja creada con pandas y formateamos las columnas para que sea legible
+#     worksheet = writer.sheets["Vector Estado"]
+#     # cell_format = workbook.add_format({'num_format': '#.####'})
+#     # cell_format.set_  # Enable text wrapping in cells (optional)
 
-    column_widths = {
-        'F': 10,
-        'Evento': 20,
-        'Reloj': 15,
-        'Rnd_llegada_alumno': 20,
-        'tiempo_llegada_alumno': 20,
-        'Proxima_llegada_alumno': 20,
-        'Rnd1_llegada_mantenimiento': 20,
-        'Rnd2_llegada_mantenimiento': 20,
-        'Proxima_llegada_mantenimiento': 20,
-        'alumno_se_queda': 15,
-        'Hora_regreso': 15,
-        'Cola_alumnos': 15,
-        'Cola_mantenimiento': 15,
-        'Rnd_fin_inscripcion': 20,
-        'tiempo_fin_inscripcion': 20,
-        'Rnd_fin_mantenimiento': 20,
-        'tiempo_fin_mantenimiento': 20,
-        'Equipo1_estado': 15,
-        'Equipo1_Hora_fin': 15,
-        'Equipo2_estado': 15,
-        'Equipo2_Hora_fin': 15,
-        'Equipo3_estado': 15,
-        'Equipo3_Hora_fin': 15,
-        'Equipo4_estado': 15,
-        'Equipo4_Hora_fin': 15,
-        'Equipo5_estado': 15,
-        'Equipo5_Hora_fin': 15,
-        'Equipo6_estado': 15,
-        'Equipo6_Hora_fin': 15,
-        'Contador_alumnos': 15,
-        'Contador_alumnos_que_regresan': 15,
-        'Porcentaje_alumnos_que_regresan': 15,
-        'Porcentaje_alumnos_que_se_van': 15,
-        'Contador_alumnos_atendidos': 15,
-        'Acumulador_tiempo_espera': 15,
-        'Promedio_tiempo_espera': 15,
-    }
+#     column_widths = {
+#         'F': 10,
+#         'Evento': 20,
+#         'Reloj': 15,
+#         'Rnd_llegada_alumno': 20,
+#         'tiempo_llegada_alumno': 20,
+#         'Proxima_llegada_alumno': 20,
+#         'Rnd1_llegada_mantenimiento': 20,
+#         'Rnd2_llegada_mantenimiento': 20,
+#         'Proxima_llegada_mantenimiento': 20,
+#         'alumno_se_queda': 15,
+#         'Hora_regreso': 15,
+#         'Cola_alumnos': 15,
+#         'Cola_mantenimiento': 15,
+#         'Rnd_fin_inscripcion': 20,
+#         'tiempo_fin_inscripcion': 20,
+#         'Rnd_fin_mantenimiento': 20,
+#         'tiempo_fin_mantenimiento': 20,
+#         'Equipo1_estado': 15,
+#         'Equipo1_Hora_fin': 15,
+#         'Equipo2_estado': 15,
+#         'Equipo2_Hora_fin': 15,
+#         'Equipo3_estado': 15,
+#         'Equipo3_Hora_fin': 15,
+#         'Equipo4_estado': 15,
+#         'Equipo4_Hora_fin': 15,
+#         'Equipo5_estado': 15,
+#         'Equipo5_Hora_fin': 15,
+#         'Equipo6_estado': 15,
+#         'Equipo6_Hora_fin': 15,
+#         'Contador_alumnos': 15,
+#         'Contador_alumnos_que_regresan': 15,
+#         'Porcentaje_alumnos_que_regresan': 15,
+#         'Porcentaje_alumnos_que_se_van': 15,
+#         'Contador_alumnos_atendidos': 15,
+#         'Acumulador_tiempo_espera': 15,
+#         'Promedio_tiempo_espera': 15,
+#     }
 
 
-    # Loop through columns and set widths
-    for col_idx, col_name in enumerate(data_frame.columns):
-        worksheet.set_column(col_idx, col_idx, column_widths[col_name])
-        # if pd.api.types.is_numeric_dtype(data_frame[col_name]):
-        #     worksheet.set_cell_format(col_idx, col_idx, cell_format)
+#     # Loop through columns and set widths
+#     for col_idx, col_name in enumerate(data_frame.columns):
+#         worksheet.set_column(col_idx, col_idx, column_widths[col_name])
+#         # if pd.api.types.is_numeric_dtype(data_frame[col_name]):
+#         #     worksheet.set_cell_format(col_idx, col_idx, cell_format)
 
-    # Se cierra el writer
-    writer.close()
+#     # Se cierra el writer
+#     writer.close()
 
 def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", auto_open=True):
     # Crear el libro de trabajo y la hoja
@@ -112,6 +111,28 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
     for merge_range in merge_ranges:
         ws.merge_cells(merge_range)
 
+    # Formatear celdas
+    for row in ws.iter_rows(min_row=1, max_row=2):
+        for cell in row:
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+            cell.fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+            cell.font = Font(bold=True)
+            # Ajustar el tamaño de las celdas al contenido
+            for column_cells in ws.columns:
+                max_length = 0
+                if isinstance(cell, opxl.cell.MergedCell):
+                    continue
+                column = cell.column_letter
+                column = column_cells[0].column_letter  # Get the column name
+                for cell in column_cells:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2
+                ws.column_dimensions[column].width = adjusted_width
+    
 
     # Agregar datos a la tabla
     for fila in vector_estado[j-1:j-1+i]:
