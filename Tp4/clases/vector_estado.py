@@ -1,5 +1,7 @@
 from cola import Cola
 from simulacion import Simulacion
+import time
+
 
 class VectorEstado:
     def __init__(self):
@@ -18,12 +20,11 @@ class VectorEstado:
         # Luego deberia ejecutar efectivamente la simulacion de esa fila, y por ultimo agregarlo a su vector de simulaciones
         
         nueva_fila_simulacion = Simulacion(self.prox_id, simulacion_anterior)
+        self.prox_id += 1
         # nueva_fila_simulacion.evento = self.proximos_eventos.proximo_en_cola()
 
         # Ejecutar la simulacion
         nueva_fila_simulacion.realizar_simulacion()
-
-
 
 
 
@@ -40,19 +41,28 @@ class VectorEstado:
 
         # while self.reloj <= x or self.iteracion <= n:
         i = 0
-        while tiempo_actual < self.tiempo_simulacion:
+        while tiempo_actual < 100.0:
             if i == 0:
-                nueva_simulacion = self.agregar_fila_simulacion(i+1, None)
+                nueva_simulacion = self.agregar_fila_simulacion(None)
 
             else:
                 simulacion_anterior = nueva_simulacion
-                nueva_simulacion = self.agregar_fila_simulacion(i+1, simulacion_anterior)
+                nueva_simulacion = self.agregar_fila_simulacion(simulacion_anterior)
+
+
+            
+            tiempo_actual = nueva_simulacion.reloj
+
+            if nueva_simulacion.evento.tipo in ("fin_mantenimiento", "llegada_mantenimiento"):
+                print(nueva_simulacion.reloj, nueva_simulacion.evento.tipo)
+            # time.sleep(0.2)
 
 
             i += 1
 
 
 
-        pass
 
 
+ve = VectorEstado()
+ve.comenzar_simulacion(4, 2, 5)

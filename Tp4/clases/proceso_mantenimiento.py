@@ -14,7 +14,7 @@ class ProcesoMantenimiento:
     
 
     @staticmethod
-    def proximo_id():
+    def get_proximo_id():
         ProcesoMantenimiento.proximo_id += 1
         return ProcesoMantenimiento.proximo_id
     

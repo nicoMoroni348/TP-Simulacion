@@ -1,5 +1,5 @@
 class PersonaMantenimiento:
-    def __init__(self, id, maquinas_restantes):
+    def __init__(self, id):
         self.id = id
         self.hora_llegada = None
         self.estado = "desocupado"

@@ -11,7 +11,7 @@ class Inscripcion:
         
 
     @staticmethod
-    def proximo_id():
+    def get_proximo_id():
         Inscripcion.proximo_id += 1
         return Inscripcion.proximo_id
     
@@ -23,4 +23,6 @@ class Inscripcion:
 
     def set_hora_fin(self, hora_fin: float):
         self.hora_fin = hora_fin
+
+        
 
