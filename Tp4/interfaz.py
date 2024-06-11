@@ -33,12 +33,17 @@ def main(page: ft.Page):
         # Convertir probabilidades a distribuciones
         
 
-        # Simular visitas
+        # Simular
         """
         v_e, u_f = simulacion(
             
         )
         """
+        for fila in v_e:
+            fila_nueva = fila.obtener_valores_atributos()
+
+            
+
 
         # Mostrar resultados
         page.add(resultado1, resultado2)

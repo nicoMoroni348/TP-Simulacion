@@ -7,10 +7,12 @@ x hechisimo  Contemplar todos los casos posibles de llegadas (creacion alumnos, 
 To do:
 
 
-- Terminar la actualizacion de metricas
-- Terminar la funcion de realizar la simulacion
+- Corregir lo de la generacion de la tabla en VectorEstado
+- Generar el excel 
+- Corregir errores de la Logica
+- Parametrizar la logica
+- Conectar a la interfaz
 
-- Terminar evento fin inscripcion
 
 
 La simulacion es literalmente la fila de la tabla, conoce a su anterior, tiene los eventos proximos a ocurrir, los 6 equipos y los alumnos que esten activos

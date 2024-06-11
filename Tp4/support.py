@@ -161,3 +161,22 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
 
 vector_estado = []
 generate_table(vector_estado, 10, 1)  # Por ejemplo, 10 filas desde el índice 1
+
+
+
+
+
+
+
+
+
+def obtener_valores_atributos(objetos):
+    valores_atributos = []
+    for obj in objetos:
+        for atributo in obj.atributos_permitidos:
+            if hasattr(obj, atributo):
+                valores_atributos.append(getattr(obj, atributo))
+    return valores_atributos
+
+
+

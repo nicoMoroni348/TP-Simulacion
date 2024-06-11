@@ -1,6 +1,7 @@
 
-
-class Alumno:
+from printeable import Printeable
+class Alumno(Printeable):
+    atributos_permitidos = ["id", "estado", "hora_llegada"]
     alumnos = []
     def __init__(self, id):
         self.id = id

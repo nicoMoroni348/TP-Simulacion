@@ -8,7 +8,7 @@ class Inscripcion:
         self.alumno= None
         self.equipo = None
         self.hora_fin = None 
-        
+      
 
     @staticmethod
     def get_proximo_id():
