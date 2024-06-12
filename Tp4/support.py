@@ -95,8 +95,8 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
 
     # Agregar primera fila de Headers
     headers = [
-        ['FILA', 'Evento', 'Reloj (minutos)', 'Llegada alumno', '', '', 'Llegada mantenimiento', '', '', '', 'Fin regreso alumno', '', 'COLAS', '', 'Fin inscripción (i)', '', 'Fin mantenimiento (i)', '', 'Equipo 1', '', 'Equipo 2', '', 'Equipo 3', '', 'Equipo 4', '', 'Equipo 5', '', 'Equipo 6', '', 'Variables estadísticas', '', '', '', '', ''],
-        ['', '', '', 'RND', 'Tiempo', 'Próxima llegada', 'RND1', 'RND2', 'Tiempo', 'Próxima llegada', 'Se queda', 'Hora regreso', 'Alumnos', 'Manten.', 'RND', 'Tiempo', 'RND', 'Tiempo', 'Estado', 'HoraFin1', 'Estado', 'HoraFin2', 'Estado', 'HoraFin3', 'Estado', 'HoraFin4', 'Estado', 'HoraFin5', 'Estado', 'HoraFin6', 'Contador alumnos', 'Contador alumnos que regresan', 'Porcentaje alumnos que se van', 'Contador alumnos atendidos', 'Acumulador tiempos de espera', 'Promedio tiempos de espera']
+        ['FILA', 'Evento', 'Reloj (minutos)', 'Llegada alumno', '', '', 'Llegada mantenimiento', '', '', '', 'Fin regreso alumno', '', 'COLAS', '', 'Fin inscripción (i)', '', 'Fin mantenimiento (i)', '', 'Equipo 1', '', 'Equipo 2', '', 'Equipo 3', '', 'Equipo 4', '', 'Equipo 5', '', 'Equipo 6', '', 'Variables estadísticas', '', '', '', '', '', '', 'Mantenimiento', '', 'Alumno1', '', '', 'Alumno2', '', '', 'Alumno3', '', '', 'Alumno4', '', '', 'Alumno5', '', '', 'Alumno6', '', '' ],
+        ['', '', '', 'RND', 'Tiempo', 'Próxima llegada', 'RND1', 'RND2', 'Tiempo', 'Próxima llegada', 'Se queda', 'Hora regreso', 'Alumnos', 'Manten.', 'RND', 'Tiempo', 'RND', 'Tiempo', 'Estado', 'HoraFin1', 'Estado', 'HoraFin2', 'Estado', 'HoraFin3', 'Estado', 'HoraFin4', 'Estado', 'HoraFin5', 'Estado', 'HoraFin6', 'Contador alumnos', 'Contador alumnos que regresan', 'Porcentaje alumnos que se van', 'Contador alumnos atendidos', 'Acumulador tiempos de espera', 'Promedio tiempos de espera', '' ,'Estado', 'Equipos Restantes', 'Estado', 'HoraLlegada', 'Tiempo Espera', 'Estado', 'HoraLlegada', 'Tiempo Espera', 'Estado', 'HoraLlegada', 'Tiempo Espera', 'Estado', 'HoraLlegada', 'Tiempo Espera', 'Estado', 'HoraLlegada', 'Tiempo Espera', 'Estado', 'HoraLlegada', 'Tiempo Espera']
     ]
 
     # Agregar headers al archivo
@@ -105,23 +105,23 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
 
     # Combinar celdas para los encabezados
     merge_ranges = [
-        ('A1:A5'), ('B1:B5'), ('C1:C5'), ('D1:F1'),  ('G1:J1'), ('K1:L1'), ('M1:N1'), ('O1:P1'), ('Q1:R1'), ('S1:T1'), ('U1:V1'), ('W1:X1'), ('Y1:Z1'), ('AA1:AB1'), ('AC1:AD1'), ('AE1:AJ1'), ('D2:D5'), ('E2:E5'), ('F2:F5'), ('G2:G5'), ('H2:H5'), ('I2:I5'), ('J2:J5'), ('K2:K5'), ('L2:L5'), ('M2:M5'), ('N2:N5'), ('O2:O5'), ('P2:P5'), ('Q2:Q5'), ('R2:R5'), ('S2:S5'), ('T2:T5'), ('U2:U5'), ('V2:V5'), ('W2:W5'), ('X2:X5'), ('Y2:Y5'), ('Z2:Z5'), ('AA2:AA5'), ('AB2:AB5'), ('AC2:AC5'), ('AD2:AD5'), ('AE2:AE5'), ('AF2:AF5'), ('AG2:AG5'), ('AH2:AH5'), ('AI2:AI5'), ('AJ2:AJ5')
+        ('A1:A5'), ('B1:B5'), ('C1:C5'), ('D1:F1'),  ('G1:J1'), ('K1:L1'), ('M1:N1'), ('O1:P1'), ('Q1:R1'), ('S1:T1'), ('U1:V1'), ('W1:X1'), ('Y1:Z1'), ('AA1:AB1'), ('AC1:AD1'), ('AE1:AJ1'), ('D2:D5'), ('E2:E5'), ('F2:F5'), ('G2:G5'), ('H2:H5'), ('I2:I5'), ('J2:J5'), ('K2:K5'), ('L2:L5'), ('M2:M5'), ('N2:N5'), ('O2:O5'), ('P2:P5'), ('Q2:Q5'), ('R2:R5'), ('S2:S5'), ('T2:T5'), ('U2:U5'), ('V2:V5'), ('W2:W5'), ('X2:X5'), ('Y2:Y5'), ('Z2:Z5'), ('AA2:AA5'), ('AB2:AB5'), ('AC2:AC5'), ('AD2:AD5'), ('AE2:AE5'), ('AF2:AF5'), ('AG2:AG5'), ('AH2:AH5'), ('AI2:AI5'), ('AJ2:AJ5'), ('AL1:AM1'), ('AN1:AP1'), ('AQ1:AS1'), ('AT1:AV1'), ('AW1:AY1'), ('AZ1:BB1'), ('BC1:BE1'), ('AK2:AK5'), ('AL2:AL5'), ('AM2:AM5'), ('AN2:AN5'), ('AO2:AO5'), ('AP2:AP5'), ('AQ2:AQ5'), ('AR2:AR5'), ('AS2:AS5'), ('AT2:AT5'), ('AU2:AU5'), ('AV2:AV5'), ('AW2:AW5'), ('AX2:AX5'), ('AY2:AY5'), ('AZ2:AZ5'), ('BA2:BA5'), ('BB2:BB5'), ('BC2:BC5'), ('BD2:BD5'), ('BE2:BE5')
     ]
 
     for merge_range in merge_ranges:
         ws.merge_cells(merge_range)
 
     # Formatear celdas
-    for row in ws.iter_rows(min_row=1, max_row=2):
+    for row in ws.iter_rows(min_row=1, max_row=5):
         for cell in row:
             cell.alignment = Alignment(horizontal='center', vertical='center', shrink_to_fit=True, wrap_text=True)
             cell.fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
             cell.font = Font(bold=True)
-            cell.border = opxl.styles.Border(
-                        left=opxl.styles.Side(border_style="thin", color="000000"),
-                        right=opxl.styles.Side(border_style="thin", color="000000"),
-                        top=opxl.styles.Side(border_style="thin", color="000000"),
-                        bottom=opxl.styles.Side(border_style="thin", color="000000")
+            cell.border = Border(
+                        left=Side(border_style="thin", color="000000"),
+                        right=Side(border_style="thin", color="000000"),
+                        top=Side(border_style="thin", color="000000"),
+                        bottom=Side(border_style="thin", color="000000")
                         )
             # Ajustar el tamaño de las celdas al contenido
             for column_cells in ws.columns:
@@ -161,22 +161,3 @@ def generate_table(vector_estado, i, j, filepath="Tabla_de_simulacion.xlsx", aut
 
 vector_estado = []
 generate_table(vector_estado, 10, 1)  # Por ejemplo, 10 filas desde el índice 1
-
-
-
-
-
-
-
-
-
-def obtener_valores_atributos(objetos):
-    valores_atributos = []
-    for obj in objetos:
-        for atributo in obj.atributos_permitidos:
-            if hasattr(obj, atributo):
-                valores_atributos.append(getattr(obj, atributo))
-    return valores_atributos
-
-
-
