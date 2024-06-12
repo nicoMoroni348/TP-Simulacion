@@ -10,7 +10,7 @@ def validar_parametros_simulacion(i, j, x):
     if j > x or j < 0 or x < 0 or i < 1 or i > 100000:
         return False
 
-    return i, j
+    return i, j, x
 
 
 def validar_demora(demora_min, demora_max):

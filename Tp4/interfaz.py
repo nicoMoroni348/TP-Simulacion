@@ -1,4 +1,5 @@
 import flet as ft
+from validaciones import validar_parametros_simulacion, validar_demora, validar_float_positivo, validar_media_desviacion
 
 def main(page: ft.Page):
     page.title = "Simulación: Inscripción a Exámenes"
@@ -21,17 +22,45 @@ def main(page: ft.Page):
 
     def simular(e):
         
-        # Validar parámetros
+        # Validaciones
+        parametros_validados = validar_parametros_simulacion(
+            i=i_input.value,
+            j=j_input.value,
+            x=tiempo_input.value
+        )
+
+        demora_inscripcion_validada = validar_demora(
+            demora_min=demora_inscripcion_min_input.value,
+            demora_max=demora_inscripcion_max_input.value
+        )
+
+        demora_mantenimiento_validada = validar_demora(
+            demora_min=demora_mantenimiento_min_input.value,
+            demora_max=demora_mantenimiento_max_input.value
+        )
+
+        media_llegadas_alumnos_validada = validar_float_positivo(media_llegadas_alumnos_input.value)
+
+        media_desviacion_regreso_mantenimiento_validadas = validar_media_desviacion(
+            media=media_regreso_mantenimiento_input.value,
+            desviacion=desviacion_regreso_mantenimiento_input.value
+        )
         
     
-        if not (True):
+        if not (parametros_validados and demora_inscripcion_validada and demora_mantenimiento_validada and media_llegadas_alumnos_validada and media_desviacion_regreso_mantenimiento_validadas):
             page.dialog = ventana_error
             ventana_error.open = True
             page.update()
             return
 
-        # Convertir probabilidades a distribuciones
-        
+
+        # Convertir datos validados
+        i, j, x = parametros_validados
+        demora_inscripcion_min, demora_inscripcion_max = demora_inscripcion_validada
+        demora_mantenimiento_min, demora_mantenimiento_max = demora_mantenimiento_validada
+        media_llegadas_alumnos = media_llegadas_alumnos_validada
+        media_regreso_mantenimiento, desviacion_regreso_mantenimiento = media_desviacion_regreso_mantenimiento_validadas
+
 
         # Simular
         """
@@ -39,17 +68,18 @@ def main(page: ft.Page):
             
         )
         """
-        for fila in v_e:
-            fila_nueva = fila.obtener_valores_atributos()
-
-            
-
 
         # Mostrar resultados
         page.add(resultado1, resultado2)
 
         mostrar_resultados(1, 2)
 
+        # return v_e, u_f
+
+
+    def simular_y_generar_tabla(e):
+        v_e = simular(e)
+        
         # Mostrar vector de estados
         """
         try:
@@ -60,7 +90,8 @@ def main(page: ft.Page):
             ventana_error.open = True
             page.update()
         """
-
+         
+         
     # COMPONENTES DE LA INTERFAZ
     
     # Resultados
@@ -105,9 +136,10 @@ def main(page: ft.Page):
     media_llegadas_alumnos_input = ft.TextField(value=2, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     llegadas_alumnos_input = [ft.Text("Tiempo entre Llegadas de Alumnos:", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
                                   ft.Text("Media =", color=ft.colors.BLACK), 
-                                  media_llegadas_alumnos_input]
+                                  media_llegadas_alumnos_input,
+                                  ft.Text("minutos", color=ft.colors.BLACK)]
     
-    media_regreso_mantenimiento_input = ft.TextField(value=1, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    media_regreso_mantenimiento_input = ft.TextField(value=60, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     desviacion_regreso_mantenimiento_input = ft.TextField(value=3, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     regreso_mantenimiento_input = [ft.Text("Tiempo entre Mantenimientos:", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
                                   media_regreso_mantenimiento_input,
@@ -119,7 +151,8 @@ def main(page: ft.Page):
     # Input parámetros simulación
     tiempo_input = ft.TextField(height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     tiempo_simulacion_input = [ft.Text("Tiempo a simular (x):", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
-                               tiempo_input]
+                               tiempo_input,
+                               ft.Text("minutos", color=ft.colors.BLACK)]
 
     i_input = ft.TextField(label="i =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     j_input = ft.TextField(label="j =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
@@ -131,6 +164,7 @@ def main(page: ft.Page):
     
     # Botones
     simular_button = ft.ElevatedButton(text="Simular", on_click=simular)
+    simular_con_tabla_button = ft.ElevatedButton(text="Simular y Generar tabla", on_click=simular_y_generar_tabla)
 
     
     # Disposición de componentes
