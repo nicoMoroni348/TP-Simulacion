@@ -89,7 +89,7 @@ def main(page: ft.Page):
         # Mostrar resultados
         page.add(resultado1, resultado2)
 
-        mostrar_resultados(ultima_fila[20], ultima_fila[23])
+        mostrar_resultados(round(ultima_fila[20], 2), round(ultima_fila[23],2))
 
         return tabla, ultima_fila
 

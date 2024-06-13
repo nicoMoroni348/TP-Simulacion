@@ -108,7 +108,7 @@ def generate_table(vector_estado, ultima_fila, filepath="Tabla_de_simulacion.xls
 
     # Combinar celdas para los encabezados
     merge_ranges = [
-        ('A1:A5'), ('B1:B5'), ('C1:C5'), ('D1:F1'),  ('G1:J1'), ('K1:L1'), ('M1:O1'), ('P1:R1'), ('S1:X1'), ('Y1:Y5'), ('Z1:Z5'), ('AA1:AB1'), ('Y1:Z1'), ('AA1:AB1'), ('AC1:AD1'), ('AE1:AF1'), ('AG1:AH1'), ('AI1:AJ1'), ('AK1:AL1'), ('AM1:AN1'), ('D2:D5'), ('E2:E5'), ('F2:F5'), ('G2:G5'), ('H2:H5'), ('I2:I5'), ('J2:J5'), ('K2:K5'), ('L2:L5'), ('M2:M5'),('N2:N5'), ('O2:O5'), ('P2:P5'), ('Q2:Q5'), ('R2:R5'), ('S2:S5'), ('T2:T5'), ('U2:U5'), ('V2:V5'), ('W2:W5'), ('X2:X5'), ('Y2:Y5'), ('Z2:Z5'), 
+        ('A1:A5'), ('B1:B5'), ('C1:C5'), ('D1:F1'),  ('G1:J1'), ('K1:L1'), ('M1:O1'), ('P1:R1'), ('S1:X1'), ('AA1:AB1'), ('Y1:Z1'), ('AA1:AB1'), ('AC1:AD1'), ('AE1:AF1'), ('AG1:AH1'), ('AI1:AJ1'), ('AK1:AL1'), ('AM1:AN1'), ('D2:D5'), ('E2:E5'), ('F2:F5'), ('G2:G5'), ('H2:H5'), ('I2:I5'), ('J2:J5'), ('K2:K5'), ('L2:L5'), ('M2:M5'),('N2:N5'), ('O2:O5'), ('P2:P5'), ('Q2:Q5'), ('R2:R5'), ('S2:S5'), ('T2:T5'), ('U2:U5'), ('V2:V5'), ('W2:W5'), ('X2:X5'), ('Y2:Y5'), ('Z2:Z5'), 
         ('AA2:AA5'), ('AB2:AB5'), ('AC2:AC5'), ('AD2:AD5'), ('AE2:AE5'), ('AF2:AF5'), ('AG2:AG5'), ('AH2:AH5'), ('AI2:AI5'), ('AJ2:AJ5'), ('AK2:AK5'), ('AL2:AL5'), ('AM2:AM5'), ('AN2:AN5'), ('AO2:AO5'), ('AP2:AP5'), ('AQ2:AQ5'), ('AR2:AR5'), ('AS2:AS5'), ('AT2:AT5'), ('AU2:AU5'), ('AV2:AV5'), ('AW2:AW5'), ('AX2:AX5'), ('AY2:YN5'), ('AZ2:AZ5'), 
     ]
 
