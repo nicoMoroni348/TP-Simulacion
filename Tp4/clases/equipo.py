@@ -1,6 +1,6 @@
-from printeable import Printeable
+from .printeable import Printeable
 class Equipo(Printeable):
-    atributos_permitidos = ["id", "estado", "hora_fin_uso"]
+    atributos_permitidos = ["estado", "hora_fin_uso"]
     equipos = []
     def __init__(self, id, estado, hora_fin_uso):
         self.id = id

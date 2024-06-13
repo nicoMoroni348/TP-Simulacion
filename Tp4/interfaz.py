@@ -1,5 +1,15 @@
+import os
+import sys
+
+import copy
+
 import flet as ft
 from validaciones import validar_parametros_simulacion, validar_demora, validar_float_positivo, validar_media_desviacion
+
+sys.path.append(os.getcwd())
+
+from clases.vector_estado import VectorEstado
+from support import generate_table
 
 def main(page: ft.Page):
     page.title = "Simulación: Inscripción a Exámenes"
@@ -63,33 +73,38 @@ def main(page: ft.Page):
 
 
         # Simular
-        """
-        v_e, u_f = simulacion(
-            
-        )
-        """
+        ve = VectorEstado()
+        ve.comenzar_simulacion(hora_j=j, iteraciones_i=i, x_tiempo_simulacion=x,
+                               demora_inscripcion_a=demora_inscripcion_min, demora_inscripcion_b=demora_inscripcion_max,
+                               demora_mantenimiento_a=demora_mantenimiento_min, demora_mantenimiento_b=demora_mantenimiento_max,
+                               media_llegada_alumnos=media_llegadas_alumnos,
+                               fin_regreso_mantenimiento_media=media_regreso_mantenimiento, fin_regreso_mantenimiento_desviacion=desviacion_regreso_mantenimiento)
+        
+        # print(len(ve.ultima_simulacion.equipos))
+
+        tabla, ultima_fila = ve.crear_vector_estado_tabla()
+
+        del ve
 
         # Mostrar resultados
         page.add(resultado1, resultado2)
 
-        mostrar_resultados(1, 2)
+        mostrar_resultados(ultima_fila[20], ultima_fila[23])
 
-        # return v_e, u_f
+        return tabla, ultima_fila
 
 
     def simular_y_generar_tabla(e):
-        v_e = simular(e)
+        tabla, ultima_fila = simular(e)
         
         # Mostrar vector de estados
-        """
         try:
-            get_table(vector_estado=v_e, ultima_fila=u_f, auto_open=True)
+            generate_table(vector_estado=tabla, ultima_fila=ultima_fila, auto_open=True)
         except PermissionError:
             page.dialog = ventana_error
             ventana_error.content = ft.Text("Debe cerrar la ventana de excel para realizar nuevamente la simulación.")
             ventana_error.open = True
             page.update()
-        """
          
          
     # COMPONENTES DE LA INTERFAZ
@@ -177,6 +192,7 @@ def main(page: ft.Page):
         ft.Row(controls=tiempo_simulacion_input, alignment=ft.MainAxisAlignment.CENTER),
         ft.Row(controls=i_j_input, alignment=ft.MainAxisAlignment.CENTER),
         simular_button,
+        simular_con_tabla_button,
     )
 
 

@@ -1,4 +1,8 @@
-class PersonaMantenimiento:
+from .printeable import Printeable
+
+
+class PersonaMantenimiento(Printeable):
+    atributos_permitidos = ["estado", "maquinas_restantes"]
     def __init__(self, id):
         self.id = id
         self.hora_llegada = None

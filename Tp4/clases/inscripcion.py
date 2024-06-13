@@ -1,5 +1,5 @@
-from alumno import Alumno
-from equipo import Equipo
+from .alumno import Alumno
+from .equipo import Equipo
 
 class Inscripcion:
     proximo_id = 0

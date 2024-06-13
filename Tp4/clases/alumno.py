@@ -1,8 +1,9 @@
 
-from printeable import Printeable
+from .printeable import Printeable
 class Alumno(Printeable):
     atributos_permitidos = ["id", "estado", "hora_llegada"]
     alumnos = []
+    prox_id = 0
     def __init__(self, id):
         self.id = id
         self.estado = None
@@ -10,6 +11,11 @@ class Alumno(Printeable):
         self.hora_atencion = None
 
         self.hora_regreso = None
+
+    @staticmethod
+    def get_proximo_id():
+        Alumno.prox_id += 1
+        return Alumno.prox_id
     
     def __str__(self):
         return f"Alumno {self.id} - {self.estado} - {self.hora_llegada} - {self.hora_atencion}"

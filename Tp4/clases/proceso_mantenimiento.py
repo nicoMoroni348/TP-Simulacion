@@ -1,5 +1,5 @@
-from equipo import Equipo
-from persona_mantenimiento import PersonaMantenimiento
+from .equipo import Equipo
+from .persona_mantenimiento import PersonaMantenimiento
 
 class ProcesoMantenimiento:
     proximo_id = 0

@@ -1,15 +1,19 @@
 import random
 import math
 
-from printeable import Printeable
+import gc
 
-from evento import Evento
-from cola import Cola
-from equipo import Equipo
-from alumno import Alumno
-from inscripcion import Inscripcion
-from persona_mantenimiento import PersonaMantenimiento
-from proceso_mantenimiento import ProcesoMantenimiento
+import copy
+
+from .printeable import Printeable
+
+from .evento import Evento
+from .cola import Cola
+from .equipo import Equipo
+from .alumno import Alumno
+from .inscripcion import Inscripcion
+from .persona_mantenimiento import PersonaMantenimiento
+from .proceso_mantenimiento import ProcesoMantenimiento
 
 
 def obtener_valores_atributos(objetos):
@@ -37,20 +41,33 @@ def obtener_valores_atributos(objetos):
 
 
 class Simulacion(Printeable):
-    atributos_permitidos = ["id", "reloj",
-                            "rnd_llegada_alumno", "tiempo_hasta_proxima_llegada", "nueva_llegada_alumno",
-                            "rnd_1_llegada_mantenimiento", "rnd_2_llegada_mantenimiento",
-                            "tiempo_hasta_proxima_llegada_mantenimiento", "nueva_llegada_mantenimiento",
-                            "rnd_fin_inscripcion", "tiempo_hasta_proximo_fin_inscripcion", "nuevo_fin_inscripcion",
-                            "rnd_fin_mantenimiento", "tiempo_hasta_proximo_fin_mantenimiento", "nuevo_fin_mantenimiento",
-                            "contador_alumnos_llegan", "contador_alumnos_se_van_y_regresan_mas_tarde",
-                            "porcentaje_alumnos_se_van", "contador_alumnos_atendidos",
-                            "acumulador_tiempos_espera", "promedio_tiempos_espera"
-                            ]         
+    # atributos_permitidos = ["id", "reloj",
+    #                         "rnd_llegada_alumno", "tiempo_hasta_proxima_llegada", "nueva_llegada_alumno",
+    #                         "rnd_1_llegada_mantenimiento", "rnd_2_llegada_mantenimiento",
+    #                         "tiempo_hasta_proxima_llegada_mantenimiento", "nueva_llegada_mantenimiento",
+    #                         "se_queda", "hora_regreso_de_alumno",
+    #                         "rnd_fin_inscripcion", "tiempo_hasta_proximo_fin_inscripcion", "nuevo_fin_inscripcion",
+    #                         "rnd_fin_mantenimiento", "tiempo_hasta_proximo_fin_mantenimiento", "nuevo_fin_mantenimiento",
+    #                         "contador_alumnos_llegan", "contador_alumnos_se_van_y_regresan_mas_tarde",
+    #                         "porcentaje_alumnos_se_van", "contador_alumnos_atendidos",
+    #                         "acumulador_tiempos_espera", "promedio_tiempos_espera"
+    #                         ]         
     
     use_sine = False
-    def __init__(self, id, simulacion_anterior):
+
+    alumnos_destruidos = 0
+
+    def __init__(self, id, simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion):
         self.id = id
+
+        self.media_llegada_alumnos = media_llegada_alumnos
+        self.demora_inscripcion_a = demora_inscripcion_a
+        self.demora_inscripcion_b = demora_inscripcion_b
+        self.demora_mantenimiento_a = demora_mantenimiento_a
+        self.demora_mantenimiento_b = demora_mantenimiento_b
+        self.fin_regreso_mantenimiento_media = fin_regreso_mantenimiento_media
+        self.fin_regreso_mantenimiento_desviacion = fin_regreso_mantenimiento_desviacion
+
 
         
         if simulacion_anterior is None:
@@ -59,31 +76,104 @@ class Simulacion(Printeable):
             return
         
 
-        self.simulacion_anterior: Simulacion = simulacion_anterior
+        self.simulacion_anterior: Simulacion = copy.copy(simulacion_anterior)
         # proximos eventos que se generan en esta fila
-        self.proximos_eventos: list = self.simulacion_anterior.proximos_eventos
+        self.proximos_eventos: list = copy.copy(self.simulacion_anterior.proximos_eventos)
+
+        # [print(e.tipo) for e in self.proximos_eventos]
+        # print("next")
+        # if self.id == 1000:
+        #     exit()
+
         
 
-        self.evento: Evento = self.tomar_evento_a_ocurrir()
+        self.evento: Evento = copy.copy(self.tomar_evento_a_ocurrir())
 
 
         self.reloj = self.evento.hora_ocurrencia
 
+        
 
 
         
-        self.cola_alumnos: Cola = self.simulacion_anterior.cola_alumnos
-        self.cola_mantenimiento: Cola = self.simulacion_anterior.cola_mantenimiento
-
-        self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes
-        self.alumnos_pendientes_regresar = self.simulacion_anterior.alumnos_pendientes_regresar
-        self.inscripciones_en_curso = self.simulacion_anterior.inscripciones_en_curso
-        self.equipos = self.simulacion_anterior.equipos
-        self.persona_mantenimiento: PersonaMantenimiento = self.simulacion_anterior.persona_mantenimiento
+        # self.cola_alumnos: Cola = copy.copy(self.simulacion_anterior.cola_alumnos)
+        self.cola_alumnos: Cola = Cola()
+        [self.cola_alumnos.agregar_a_cola(copy.copy(al)) for al in self.simulacion_anterior.cola_alumnos.cola]
 
 
+        self.cola_mantenimiento: Cola = copy.copy(self.simulacion_anterior.cola_mantenimiento)
+        self.cola_mantenimiento: Cola = Cola()
+        [self.cola_mantenimiento.agregar_a_cola(copy.copy(mant)) for mant in self.simulacion_anterior.cola_mantenimiento.cola]
 
-        self.alumno_se_fue_y_no_espero = False
+
+
+
+        
+        
+        # if 50 < self.id < 100:
+        #    print("viejo", [(al.id, al.estado, al.hora_llegada) for al in self.simulacion_anterior.alumnos_existentes if al is not None])
+        
+        #self.indice_alumno_a_reemplazar = -1
+        # self.alumnos_existentes = copy.copy([al for al in self.simulacion_anterior.alumnos_existentes if al.estado not in ("destruccion")])
+        #self.alumnos_existentes = [ None ] * len(self.simulacion_anterior.alumnos_existentes)
+
+        #for i, al in enumerate(self.simulacion_anterior.alumnos_existentes):
+        #    if al is None or al.estado in ("destruccion", "siendo_atendido"):
+          #      self.alumnos_existentes[i] = None
+         #   else:
+           #     self.alumnos_existentes[i] = copy.copy(al)
+
+        # Solucion Rami
+        # print("viejo", [(al.id, al.estado, al.hora_llegada) for al in self.simulacion_anterior.alumnos_existentes if al is not None])
+
+        self.indice_alumno_a_reemplazar = -1
+        self.alumnos_existentes = [ None ] * len(self.simulacion_anterior.alumnos_existentes)
+
+        for i, al in enumerate(self.simulacion_anterior.alumnos_existentes):
+            if al is None or al.estado in ("destruccion", "siendo_atendido"):
+                self.alumnos_existentes[i] = None
+
+                # Simulacion.alumnos_destruidos += 1
+            else:
+                self.alumnos_existentes[i] = copy.copy(al)
+
+
+
+        # if 50 < self.id < 100:
+        #     print("nuevo", [(al.id, al.estado, al.hora_llegada) for al in self.alumnos_existentes if al is not None])
+        
+
+                
+
+
+        
+        
+            
+            
+                
+        
+        # self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes 
+        self.alumnos_pendientes_regresar = copy.copy(self.simulacion_anterior.alumnos_pendientes_regresar)
+
+        self.inscripciones_en_curso = [copy.copy(ins) for ins in self.simulacion_anterior.inscripciones_en_curso]
+
+        self.mantenimiento_en_curso = copy.copy(self.simulacion_anterior.mantenimiento_en_curso)
+
+
+        self.equipos = [copy.copy(eq) for eq in self.simulacion_anterior.equipos]
+        self.persona_mantenimiento: PersonaMantenimiento = copy.copy(self.simulacion_anterior.persona_mantenimiento)
+
+
+
+        self.se_queda = True
+        self.hora_regreso_de_alumno = self.simulacion_anterior.hora_regreso_de_alumno
+
+
+        # if self.evento.tipo == "fin_mantenimiento":
+        #     print(self.reloj, self.cola_alumnos.get_longitud_cola(), self.persona_mantenimiento.maquinas_restantes, self.persona_mantenimiento.estado)
+
+        # if self.evento.tipo in ("fin_inscripcion", "llegada_alumno"):
+        
 
         
 
@@ -103,6 +193,7 @@ class Simulacion(Printeable):
 
 
         # Fin inscripcion
+        
         self.rnd_fin_inscripcion = None
         self.tiempo_hasta_proximo_fin_inscripcion = None
         self.nuevo_fin_inscripcion = None
@@ -134,23 +225,104 @@ class Simulacion(Printeable):
         self.promedio_tiempos_espera = self.simulacion_anterior.promedio_tiempos_espera
 
 
+        # gc.collect()
+
+
+        
+
+
+
+
 
     # Mapear fila simulación
-    def obtener_vector_fila(self):
+    # def obtener_vector_fila(self):
         
-        vector_fila = obtener_valores_atributos(
-            [self.evento, self, self.cola_alumnos, self.cola_mantenimiento]
-            )
+    #     vector_fila = obtener_valores_atributos(
+    #         [self.evento, self, self.cola_alumnos, self.cola_mantenimiento, self.persona_mantenimiento]
+    #         )
+        
+        
+    #     vector_fila += obtener_valores_atributos(self.equipos)
+    #     vector_fila += obtener_valores_atributos([alum for alum in self.alumnos_existentes if alum.estado not in ("destruccion", "siendo_atendido")])
 
 
+    #     return vector_fila
+
+
+
+    # Mapear fila simulación
+    def obtener_vector_fila_new(self):   
+
+
+        vector_fila =  [
+            self.id,
+            self.evento.tipo,
+            self.reloj,
+            self.rnd_llegada_alumno,
+            self.tiempo_hasta_proxima_llegada,
+            self.nueva_llegada_alumno,
+            self.rnd_1_llegada_mantenimiento,
+            self.rnd_2_llegada_mantenimiento,
+            self.tiempo_hasta_proxima_llegada_mantenimiento,
+            self.nueva_llegada_mantenimiento,
+            self.se_queda,
+            self.hora_regreso_de_alumno,
+            self.rnd_fin_inscripcion,
+            self.tiempo_hasta_proximo_fin_inscripcion,
+            self.nuevo_fin_inscripcion,
+            self.rnd_fin_mantenimiento,
+            self.tiempo_hasta_proximo_fin_mantenimiento,
+            self.nuevo_fin_mantenimiento,
+            self.contador_alumnos_llegan,
+            self.contador_alumnos_se_van_y_regresan_mas_tarde,
+            self.porcentaje_alumnos_se_van,
+            self.contador_alumnos_atendidos,
+            self.acumulador_tiempos_espera,
+            self.promedio_tiempos_espera,
+            self.cola_alumnos.get_longitud_cola(),
+            self.cola_mantenimiento.get_longitud_cola(),
+            self.persona_mantenimiento.estado,
+            self.persona_mantenimiento.maquinas_restantes,
+        ]
+
+    
+        for eq in self.equipos:
+            eq: Equipo = eq
+            vector_fila += [eq.estado, eq.hora_fin_uso]
+
         
-        
-        
-        vector_fila += obtener_valores_atributos(self.equipos)
-        vector_fila += obtener_valores_atributos(self.alumnos_existentes)
+        for al in self.alumnos_existentes:
+            al: Alumno = al
+            if al is not None:
+                vector_fila += [al.id, al.estado, al.hora_llegada, None]
+            else:
+                vector_fila += [None] * 4
+
+            
+            # Simulacion.alumnos_destruidos += 1
+
+# Inicializamos vector_fila con un tamaño suficiente para contener todos los datos de los alumnos
+        # vector_fila = [None] * len(self.alumnos_existentes) * 4
+
+        # for i, al in enumerate(self.alumnos_existentes):
+        #     al: Alumno = al
+        #     if al is not None:
+        #         # Actualizamos los datos del alumno en las posiciones correspondientes de vector_fila
+        #         vector_fila[i*4:i*4+4] = [al.id, al.estado, al.hora_llegada, None]
+        #     else:
+        #         # Si el alumno no existe, llenamos las posiciones correspondientes con None
+        #         vector_fila[i*4:i*4+4] = [None] * 4
+
+        #     Simulacion.alumnos_destruidos += 1
+
+
 
 
         return vector_fila
+
+    
+
+
 
         
 
@@ -172,9 +344,16 @@ class Simulacion(Printeable):
         self.alumnos_pendientes_regresar = []
         self.inscripciones_en_curso = []
 
+        self.mantenimiento_en_curso = None
+
+        self.hora_regreso_de_alumno = None
+        self.se_queda = None
+
 
         # Creamos los equipos
-        self.equipos = Equipo.crear_equipos()
+        # self.equipos = copy.copy(Equipo.crear_equipos())
+        self.equipos = [copy.copy(Equipo(i, "libre", None)) for i in range(1, 7)]
+        # print(len(self.equipos), self.id, self.evento.tipo)
 
 
         # Creamos la persona de mantenimiento
@@ -183,20 +362,82 @@ class Simulacion(Printeable):
 
         # Creamos la cola de alumnos
         self.cola_alumnos = Cola()
+
         
         self.cola_mantenimiento = Cola()
+
+
+        
+
+
+
+        # Llegadas Alumnos
+        self.rnd_llegada_alumno = None
+        self.tiempo_hasta_proxima_llegada = None
+        self.nueva_llegada_alumno = None
+
+        
+
+        # Llegadas Mantenimiento
+        self.rnd_1_llegada_mantenimiento = None
+        self.rnd_2_llegada_mantenimiento = None
+        self.tiempo_hasta_proxima_llegada_mantenimiento = None
+        self.nueva_llegada_mantenimiento = None
+
+
+        # Fin inscripcion
+        
+        self.rnd_fin_inscripcion = None
+        self.tiempo_hasta_proximo_fin_inscripcion = None
+        self.nuevo_fin_inscripcion = None
+
+
+        # Fin Mantenimiento
+        self.rnd_fin_mantenimiento = None
+        self.tiempo_hasta_proximo_fin_mantenimiento = None
+        self.nuevo_fin_mantenimiento = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     def agregar_proximo_evento(self, proximo_evento: Evento):
         self.proximos_eventos.append(proximo_evento)
+
         self.proximos_eventos.sort(key=lambda x: x.hora_ocurrencia)
+
+        
 
 
 
     def tomar_evento_a_ocurrir(self):
-        return self.proximos_eventos.pop(0)
 
+        return self.proximos_eventos.pop(0)
 
 
 
@@ -207,11 +448,11 @@ class Simulacion(Printeable):
 
 
 
-    def generar_proxima_llegada_alumno(self, media=2):
+    def generar_proxima_llegada_alumno(self):
         # -2*LN(1-E11)
         # Exponencial ()
         # media = 2 min
-        media = 0.5
+        media = self.media_llegada_alumnos
 
         self.rnd_llegada_alumno = random.random()
         self.tiempo_hasta_proxima_llegada = -media * math.log(1-self.rnd_llegada_alumno, math.e)
@@ -228,10 +469,8 @@ class Simulacion(Printeable):
     def generar_proxima_llegada_mantenimiento(self):
         # (SQRT(-2*LN(1-H11))*COS(2*PI()*I11))*3+60
         # Normal(media; de)
-        # media = 60 minutos
-        # de = 3 minutos
-        media = 60
-        de = 3
+        media = self.fin_regreso_mantenimiento_media
+        de = self.fin_regreso_mantenimiento_desviacion
 
         self.rnd_1_llegada_mantenimiento = random.random()
         self.rnd_2_llegada_mantenimiento = random.random()
@@ -254,8 +493,9 @@ class Simulacion(Printeable):
         # Uniforme(A,B)
         # A = 5 minutos
         # B = 8 minutos
-        a = 5
-        b = 8
+        a = self.demora_inscripcion_a
+        b = self.demora_inscripcion_b
+
         self.rnd_fin_inscripcion = random.random()
         self.tiempo_hasta_proximo_fin_inscripcion = a + (b-a) * self.rnd_fin_inscripcion
         self.nuevo_fin_inscripcion = self.tiempo_hasta_proximo_fin_inscripcion + self.reloj
@@ -272,8 +512,9 @@ class Simulacion(Printeable):
         # Uniforme(A,B)
         # A = 3 minutos
         # B = 10 minutos
-        a = 3
-        b = 10
+        
+        a = self.demora_mantenimiento_a
+        b = self.demora_mantenimiento_b
         self.rnd_fin_mantenimiento = random.random()
         self.tiempo_hasta_proximo_fin_mantenimiento = a + (b-a) * self.rnd_fin_mantenimiento
         self.nuevo_fin_mantenimiento = self.tiempo_hasta_proximo_fin_mantenimiento + self.reloj
@@ -343,8 +584,12 @@ class Simulacion(Printeable):
     
     def agregar_alumno_existente(self, alumno):
         # self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes + [alumno]
-        self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes[:]
-        self.alumnos_existentes.append(alumno)
+        # self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes[:]
+        if None in self.alumnos_existentes:
+            indice = self.alumnos_existentes.index(None)
+            self.alumnos_existentes[indice] = alumno
+        else:
+            self.alumnos_existentes += [alumno]
 
 
 
@@ -354,7 +599,7 @@ class Simulacion(Printeable):
         # Si es un alumno que recién entra a la simulación y no es un alumno que regresó:
         if es_nuevo:
             # Si el alumno recién entra a la simulación, crea el objeto
-            nuevo_alumno = Alumno(len(self.alumnos_existentes) + 1)
+            nuevo_alumno = Alumno(Alumno.get_proximo_id())
 
         else:
             # Si es un alumno que regreso de la espera de desocupacion
@@ -391,7 +636,7 @@ class Simulacion(Printeable):
                 inscripcion.set_alumno(nuevo_alumno)
                 inscripcion.set_equipo(equipo)
 
-                
+
                 equipo.set_hora_fin_uso(self.nuevo_fin_inscripcion)
 
                 # Setearle a la inscripcion la hora del fin de la inscripcion (no se bien para que)
@@ -411,12 +656,15 @@ class Simulacion(Printeable):
 
         
         if not hay_equipo_libre:
-            # Si hay +5 alumnos en la cola  -> Se va y regresa en 30 mins         
+            # Si hay +5 alumnos en la cola  -> Se va y regresa en 30 mins  
+            # 
+            
+                   
             if self.cola_alumnos.get_longitud_cola() >= 5:
                 # El alumno se va y regresa en 30 minutos 
                 
                 # EL alumno de esta iteracion se fue y no espero
-                self.alumno_se_fue_y_no_espero = True
+                self.se_queda = False
 
                 # Actualizamos estado
                 nuevo_alumno.set_estado("esperando_desocupacion")
@@ -445,34 +693,21 @@ class Simulacion(Printeable):
                 # Agregamos el alumno a la cola
                 self.cola_alumnos.agregar_a_cola(nuevo_alumno)
                 
+                
         
 
 
         # Agregar alumno a la lista de alumnos
         self.agregar_alumno_existente(nuevo_alumno)
+        # print(self.alumnos_existentes[-1].estado)
 
     
 
-    def manejar_proceso_mantenimiento(self):
+    def iniciar_proceso_mantenimiento(self):
         # Este metodo se ejecuta en cada llegada de mantenimiento
-        # y cada vez que se desocupa un equipo siempre y cuando la cola de mantenimiento no este vacia
-        # Y cada vez que termine de mantener un equipo (si quedan equipos pendientes)
-
-        # self.persona_mantenimiento.set_hora_llegada(self.reloj)
-
-        # Si terminó el mantenimiento a TODAS las máquinas
-        # print(self.persona_mantenimiento.maquinas_restantes)
-        if not self.persona_mantenimiento.maquinas_restantes: 
-            # Resetea los equipos restantes en [1, 2, 3, 4, 5, 6]
-            self.persona_mantenimiento.resetear_equipos_a_mantener()
-            
-            # Genera la próxima llegada de la persona de mantenimiento
-            self.generar_proxima_llegada_mantenimiento()
-
-            return
 
 
-        
+    
         hay_equipo_libre = False
 
         # Recorre todos los equipos libres que FALTAN POR MANTENER
@@ -503,17 +738,73 @@ class Simulacion(Printeable):
                 proceso_mantenimiento.set_persona_mantenimiento(self.persona_mantenimiento)
                 proceso_mantenimiento.set_hora_fin(self.nuevo_fin_mantenimiento)
 
+                self.mantenimiento_en_curso = proceso_mantenimiento
+
                 break
 
-                
-
-        
         if not hay_equipo_libre:
             # Agregamos el personal de mantenimiento a la cola prioritaria
             self.cola_mantenimiento.agregar_a_cola(self.persona_mantenimiento)
 
             # Actualizamos su estado a Esperando Atencion
             self.persona_mantenimiento.set_estado('esperando_atencion')
+
+
+
+
+    def actualizar_estados_equipo_mant_segun_proceso_mant(self, proceso_mant_terminado: ProcesoMantenimiento):
+
+        for eq in self.equipos:
+            eq: Equipo = eq
+            if eq.id == proceso_mant_terminado.equipo.id:
+
+                eq.set_estado("libre")
+                proceso_mant_terminado.equipo.set_estado("libre")
+        
+        self.persona_mantenimiento.set_estado("esperando_atencion")
+        proceso_mant_terminado.persona_mantenimiento.set_estado("esperando_atencion")
+
+    
+
+
+    def finalizar_proceso_mantenimiento(self):
+        # Este metodo se ejecuta cada vez que se desocupa un equipo siempre y cuando la cola de mantenimiento no este vacia
+        # Y cada vez que termine de mantener un equipo (si quedan equipos pendientes)
+
+
+        # DONDE termino de Mantener
+        proceso_mantenimiento_terminado = self.mantenimiento_en_curso
+
+
+        self.actualizar_estados_equipo_mant_segun_proceso_mant(proceso_mantenimiento_terminado)
+
+
+        # Verificar si inicia un mantenimiento o ya termino
+        
+
+        # Si terminó el mantenimiento a TODAS las máquinas
+        if not self.persona_mantenimiento.maquinas_restantes: 
+            # Resetea los equipos restantes en [1, 2, 3, 4, 5, 6]
+            self.persona_mantenimiento.resetear_equipos_a_mantener()
+            self.persona_mantenimiento.set_estado("desocupado")
+            
+            # Genera la próxima llegada de la persona de mantenimiento
+            self.generar_proxima_llegada_mantenimiento()
+
+            
+
+            return
+
+
+        self.iniciar_proceso_mantenimiento()
+        self.comenzar_nuevo_uso_equipo()
+
+
+        # if self.cola_alumnos.get_longitud_cola() != 0:
+            
+            
+
+
 
 
 
@@ -528,15 +819,23 @@ class Simulacion(Printeable):
         
         for al in self.alumnos_existentes:
             al: Alumno = al
-            if al.id == inscripcion_finalizada.alumno.id:
+            if al is not None and al.id == inscripcion_finalizada.alumno.id:
                 al.set_estado("destruccion")
+
+                
+
+
+                
                 # al.set_hora_atencion(self.reloj) # Este tendria que haber sido hora de fin inscripcion
 
+                
+
+                
 
     def actualizar_estado_alumno_segun_inicio_inscripcion(self, alumno: Alumno):
         for al in self.alumnos_existentes:
             al: Alumno = al
-            if al.id == alumno.id:
+            if al is not None and al.id == alumno.id:
                 al.set_estado("siendo_atendido")
                 al.set_hora_atencion(self.reloj)
 
@@ -549,6 +848,12 @@ class Simulacion(Printeable):
             if equipo.esta_libre():
                 # ACtualizar estado del alumno en la lista de alumnos existentes
                 self.actualizar_estado_alumno_segun_inicio_inscripcion(alumno)
+
+                alumno.set_hora_atencion(self.reloj)
+
+                # Actualizamos el tiempo de espera del alumno
+                self.actualizar_tiempo_de_espera(alumno)
+
 
                 # Actualizar estado del equipo en la lista de equipos 
                 equipo.set_estado("ocupado_inscripcion")
@@ -568,26 +873,44 @@ class Simulacion(Printeable):
                 self.agregar_inscripcion_en_curso(inscripcion)
 
 
-                # Actualizamos el tiempo de espera del alumno
-                self.actualizar_tiempo_de_espera(alumno)
+                
+
+                
+
+
                 break
 
 
+
+    def hay_equipos_libres(self):
+        for e in self.equipos:
+            e: Equipo = e
+            if e.estado == "libre":
+                return True
+        return False
+
+    def hay_equipos_libres_ya_mantenidos(self):
+        for e in self.equipos:
+            e: Equipo = e
+            if e.estado == "libre" and e.id not in self.persona_mantenimiento.maquinas_restantes:
+                return True
+        return False
 
 
     def comenzar_nuevo_uso_equipo(self):
 
         objeto_atendido = None 
 
-        if self.cola_mantenimiento.get_longitud_cola() != 0:
+        if self.cola_mantenimiento.get_longitud_cola() != 0 and not self.hay_equipos_libres_ya_mantenidos(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
             objeto_atendido = self.cola_mantenimiento.proximo_en_cola()
 
-            self.manejar_proceso_mantenimiento()
-            
-
-        else: # si la cola prioritaria está vacía
+            self.iniciar_proceso_mantenimiento()
+        
+        else:    # si la cola prioritaria está vacía
             if self.cola_alumnos.get_longitud_cola() != 0:
+
                 objeto_atendido = self.cola_alumnos.proximo_en_cola()
+                
                 self.ingresar_alumno_a_equipo(objeto_atendido)
 
                 
@@ -664,7 +987,7 @@ class Simulacion(Printeable):
 
 
         elif self.evento.tipo == "llegada_mantenimiento":
-            self.manejar_proceso_mantenimiento()
+            self.iniciar_proceso_mantenimiento()
 
 
             # Ver que mas falta aca
@@ -686,17 +1009,32 @@ class Simulacion(Printeable):
 
 
         elif self.evento.tipo == "fin_mantenimiento":
-            self.manejar_proceso_mantenimiento()
+            self.finalizar_proceso_mantenimiento()
+
+        
 
 
 
 
 
 
+        # print(f"Al final de sim: {self.cola_alumnos.get_longitud_cola()}")
 
 
 
 
+        # if 5 < self.id < 100:
+
+            # print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
+            #     self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
+            #     [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
+            # for al in self.alumnos_existentes:
+            #     if al is not None:
+            #         print(f"({al.estado, al.hora_llegada})", end="-")
+            #     else:
+            #         print(None, end="-")
+            # print()
+            # print([(al.id, al.estado, al.hora_llegada) for al in self.alumnos_existentes if al is not None])
 
 
 

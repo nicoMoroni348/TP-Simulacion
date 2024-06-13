@@ -1,4 +1,4 @@
-from printeable import Printeable
+from .printeable import Printeable
 
 class Cola(Printeable):
     atributos_permitidos = ["longitud_cola"]
@@ -8,7 +8,8 @@ class Cola(Printeable):
     
     def agregar_a_cola(self, elemento):
         self.cola.append(elemento)
-        self.longitud_cola = len(self.cola)
+        # self.longitud_cola = len(self.cola)
+        # self.longitud_cola += 1
 
     def proximo_en_cola(self):
         if self.cola:
@@ -17,7 +18,8 @@ class Cola(Printeable):
     
     def get_longitud_cola(self):
         
-        return self.longitud_cola
+        # return self.longitud_cola
+        return len(self.cola)
     
     def agregar_en_orden_de_ocurrencia_a_cola(self, elemento):
         self.cola.append(elemento)

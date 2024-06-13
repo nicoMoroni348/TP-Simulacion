@@ -1,4 +1,4 @@
-from printeable import Printeable
+from .printeable import Printeable
 
 class Evento(Printeable):
     atributos_permitidos = ["tipo"]
