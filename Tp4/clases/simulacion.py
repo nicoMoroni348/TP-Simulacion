@@ -153,7 +153,7 @@ class Simulacion(Printeable):
                 
         
         # self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes 
-        self.alumnos_pendientes_regresar = copy.copy(self.simulacion_anterior.alumnos_pendientes_regresar)
+        self.alumnos_pendientes_regresar = [copy.copy(al) for al in self.simulacion_anterior.alumnos_pendientes_regresar]
 
         self.inscripciones_en_curso = [copy.copy(ins) for ins in self.simulacion_anterior.inscripciones_en_curso]
 
@@ -161,7 +161,14 @@ class Simulacion(Printeable):
 
 
         self.equipos = [copy.copy(eq) for eq in self.simulacion_anterior.equipos]
-        self.persona_mantenimiento: PersonaMantenimiento = copy.copy(self.simulacion_anterior.persona_mantenimiento)
+
+        # self.persona_mantenimiento: PersonaMantenimiento = copy.copy(self.simulacion_anterior.persona_mantenimiento)
+
+        self.persona_mantenimiento: PersonaMantenimiento = PersonaMantenimiento(self.simulacion_anterior.persona_mantenimiento.id)
+        self.persona_mantenimiento.set_estado(self.simulacion_anterior.persona_mantenimiento.estado)
+        self.persona_mantenimiento.set_hora_llegada(self.simulacion_anterior.persona_mantenimiento.hora_llegada)
+        self.persona_mantenimiento.maquinas_restantes = copy.copy(self.simulacion_anterior.persona_mantenimiento.maquinas_restantes)
+
 
 
 
@@ -253,6 +260,11 @@ class Simulacion(Printeable):
     # Mapear fila simulación
     def obtener_vector_fila_new(self):   
 
+        if self.se_queda:
+            self.se_queda = "TRUE"
+        else:
+            self.se_queda = "FALSE"
+
 
         vector_fila =  [
             self.id,
@@ -285,7 +297,7 @@ class Simulacion(Printeable):
             self.persona_mantenimiento.maquinas_restantes,
         ]
 
-    
+
         for eq in self.equipos:
             eq: Equipo = eq
             vector_fila += [eq.estado, eq.hora_fin_uso]
@@ -529,7 +541,15 @@ class Simulacion(Printeable):
         self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
 
     def agregar_alumno_pendiente_regresar(self, alumno: Alumno):
-        alumno.set_hora_regreso(self.reloj + 30)
+
+        if alumno.hora_regreso is None:
+
+            alumno.set_hora_regreso(self.reloj + 30)
+            self.hora_regreso_de_alumno = self.reloj + 30
+
+            self.actualizar_contador_alumnos_se_van_regresan_mas_tarde()
+
+
         self.alumnos_pendientes_regresar.append(alumno)
 
     
@@ -571,6 +591,7 @@ class Simulacion(Printeable):
         self.contador_alumnos_atendidos += 1
     
     def actualizar_contador_alumnos_se_van_regresan_mas_tarde(self):
+        
 
         self.contador_alumnos_se_van_y_regresan_mas_tarde += 1
         self.porcentaje_alumnos_se_van = (self.contador_alumnos_se_van_y_regresan_mas_tarde / self.contador_alumnos_llegan) * 100
@@ -604,6 +625,11 @@ class Simulacion(Printeable):
         else:
             # Si es un alumno que regreso de la espera de desocupacion
             nuevo_alumno = self.siguiente_alumno_pendiente_regresar()
+
+            for al in self.alumnos_existentes:
+                if al is not None and al.id == nuevo_alumno.id:
+                    al.set_hora_llegada(self.reloj)
+                    
         
         nuevo_alumno.set_hora_llegada(self.reloj)
 
@@ -624,8 +650,14 @@ class Simulacion(Printeable):
 
                 nuevo_alumno.set_estado("siendo_atendido")
 
+                for al in self.alumnos_existentes:
+                    if al is not None and al.id == nuevo_alumno.id:
+                        al.set_hora_atencion(self.reloj)
+                        al.set_estado("siendo_atendido")
+
                 # Cambiar el estado del equipo ocupado por el alumno
                 equipo.set_estado("ocupado_inscripcion")
+                
 
                 # Se genera el proximo evento de fin de inscripcion
                 self.generar_proximo_fin_inscripcion()
@@ -668,6 +700,10 @@ class Simulacion(Printeable):
 
                 # Actualizamos estado
                 nuevo_alumno.set_estado("esperando_desocupacion")
+
+                for al in self.alumnos_existentes:
+                    if al is not None and al.id == nuevo_alumno.id:
+                        al.set_estado("esperando_desocupacion")
                 # Seteamos la hora de regreso del alumno
 
                 # Creamos evento y agregamos a la lista
@@ -675,8 +711,7 @@ class Simulacion(Printeable):
 
                 self.agregar_alumno_pendiente_regresar(nuevo_alumno)
 
-
-                self.actualizar_contador_alumnos_se_van_regresan_mas_tarde()
+                
                 
                 
             
@@ -688,6 +723,9 @@ class Simulacion(Printeable):
 
                 # seteamos el estado a esperando_atencion
                 nuevo_alumno.set_estado("esperando_atencion")
+                for al in self.alumnos_existentes:
+                    if al is not None and al.id == nuevo_alumno.id:
+                        al.set_estado("esperando_atencion")
                 # La hora de atencion se debe setear cuando se atienda efectivamente a ese alumno
 
                 # Agregamos el alumno a la cola
@@ -1035,6 +1073,8 @@ class Simulacion(Printeable):
             #         print(None, end="-")
             # print()
             # print([(al.id, al.estado, al.hora_llegada) for al in self.alumnos_existentes if al is not None])
+            # if self.evento.tipo == "llegada_alumno":
+                # print(self.id, self.evento, round(self.reloj, 4), f"Se queda {self.se_queda} Hora regreso {self.al}")
 
 
 

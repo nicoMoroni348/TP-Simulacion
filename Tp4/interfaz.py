@@ -25,7 +25,7 @@ def main(page: ft.Page):
 
 
     def mostrar_resultados(porcentaje, promedio):
-        res1.value = f"{porcentaje/100}%"
+        res1.value = f"{porcentaje}%"
         res2.value = f"{promedio} minutos"
         page.update()
 
@@ -89,7 +89,7 @@ def main(page: ft.Page):
         # Mostrar resultados
         page.add(resultado1, resultado2)
 
-        mostrar_resultados(ultima_fila[20], ultima_fila[23])
+        mostrar_resultados(round(ultima_fila[20], 6), round(ultima_fila[23], 4))
 
         return tabla, ultima_fila
 
