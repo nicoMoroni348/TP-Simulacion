@@ -933,23 +933,41 @@ class Simulacion(Printeable):
             if e.estado == "libre" and e.id not in self.persona_mantenimiento.maquinas_restantes:
                 return True
         return False
+    
+    def hay_equipo_libre_restante(self):
+        for e in self.equipos:
+            e: Equipo = e
+
+            if e.estado == "libre" and e.id in self.persona_mantenimiento.maquinas_restantes:
+                return True
+        
+        return False
 
 
     def comenzar_nuevo_uso_equipo(self):
 
         objeto_atendido = None 
 
-        if self.cola_mantenimiento.get_longitud_cola() != 0 and not self.hay_equipos_libres_ya_mantenidos(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
+        # if self.cola_mantenimiento.get_longitud_cola() != 0 and not self.hay_equipos_libres_ya_mantenidos(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
+        if self.cola_mantenimiento.get_longitud_cola() != 0 and self.hay_equipo_libre_restante(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
             objeto_atendido = self.cola_mantenimiento.proximo_en_cola()
 
             self.iniciar_proceso_mantenimiento()
         
-        else:    # si la cola prioritaria está vacía
-            if self.cola_alumnos.get_longitud_cola() != 0:
+        # else:
+            # si la cola prioritaria está vacía
+        elif self.cola_alumnos.get_longitud_cola() != 0:
+            # if self.cola_alumnos.get_longitud_cola() != 0:
 
-                objeto_atendido = self.cola_alumnos.proximo_en_cola()
-                
-                self.ingresar_alumno_a_equipo(objeto_atendido)
+            objeto_atendido = self.cola_alumnos.proximo_en_cola()
+            
+            self.ingresar_alumno_a_equipo(objeto_atendido)
+
+        else:
+            print("PASO ALGO LOCURA")
+            print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
+                self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
+                [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
 
                 
         # Si no hay nadie en la cola ni de mantenimiento ni de alumnos, no hace nada, queda en libre el estado del equipo
@@ -1061,11 +1079,11 @@ class Simulacion(Printeable):
 
 
 
-        # if 5 < self.id < 100:
+        if 5 < self.id < 500:
 
-            # print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
-            #     self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
-            #     [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
+            print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
+                self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
+                [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
             # for al in self.alumnos_existentes:
             #     if al is not None:
             #         print(f"({al.estado, al.hora_llegada})", end="-")
@@ -1074,7 +1092,7 @@ class Simulacion(Printeable):
             # print()
             # print([(al.id, al.estado, al.hora_llegada) for al in self.alumnos_existentes if al is not None])
             # if self.evento.tipo == "llegada_alumno":
-                # print(self.id, self.evento, round(self.reloj, 4), f"Se queda {self.se_queda} Hora regreso {self.al}")
+            #     print(self.id, self.evento, round(self.reloj, 4), f"Se queda {self.se_queda} Hora regreso {self.al}")
 
 
 

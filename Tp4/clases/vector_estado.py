@@ -151,8 +151,8 @@ class VectorEstado:
         # uno = ultima_fila_tabla[1]
         # ultima_fila_tabla[0] = uno
         # ultima_fila_tabla[1] = cero
-        for el in vector_estado_tabla[:7]:
-            print(el[:3])
+        # for el in vector_estado_tabla[:7]:
+        #     print(el[:3])
     
 
         return vector_estado_tabla, ultima_fila_tabla
