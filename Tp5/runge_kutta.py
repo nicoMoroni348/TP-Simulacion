@@ -4,8 +4,6 @@ import math as math
 
 
 
-
-
 # ARMA LA TABLA COMPLETA
 def runge_kutta(intervalo_t, coeficiente, termino_independiente):
     # Condicion inicial
@@ -18,7 +16,7 @@ def runge_kutta(intervalo_t, coeficiente, termino_independiente):
     # Para armar la tabla una sola vez usamos el valor máximo que puede tomar t 
     limite_superior_t = intervalo_t[1]    
 
-    while t <= limite_superior_t:        
+    while t <= limite_superior_t+h:        
         
         fila = runge_kutta_step(t, p, h, coeficiente, termino_independiente)
         tabla_runge_kutta.append(fila)
@@ -29,9 +27,11 @@ def runge_kutta(intervalo_t, coeficiente, termino_independiente):
     return tabla_runge_kutta
 
 
+
 def f(t, P, coeficiente, termino_independiente):
     # Define la función f(x, y) que representa la ecuación diferencial
     return coeficiente * P + termino_independiente
+
 
 
 def runge_kutta_step(t, P, h, coeficiente, termino_independiente):
@@ -58,42 +58,41 @@ def calcular_n(tabla_runge_kutta, intervalo_t):
     n = None
     
     rnd = random.random()
-    t_final = (intervalo_t[0] + rnd * (intervalo_t[1] - intervalo_t[0])) # Tiempo de traslado
+    t_final = (intervalo_t[0] + rnd * (intervalo_t[1] - intervalo_t[0])) # Tiempo de traslado ()
+
+    
     
     for fila in tabla_runge_kutta: 
+        print(f"t_final: {t_final}  -   t_runge: {fila[0]}")
         if fila[0] >= t_final:
-            p_final = fila[1]
+            print("ENTRO")
+            p_final = fila[1] # Guarda la paciencia correspondiente al tiempo objetivo
             break
     
-    n = math.floor(p_final)
+    n = 0
+    if t_final != 0:
+        n = math.floor(p_final) # Truncamiento al entero inferior más próximo
+    
 
     return rnd, t_final*60, p_final, n
 
 
 
-intervalo_t = (0, 1)
-coeficiente = 0.4
-termino_independiente = 5
 
-tabla = runge_kutta(intervalo_t, coeficiente, termino_independiente)
+if __name__ == "__main__":
+    # EJECUCIÓN
 
-for fila in tabla:
-    print(fila)
+    intervalo_t = (0, 1)
+    coeficiente = 0.4
+    termino_independiente = 5
 
-for i in range(5):
-    cliente = calcular_n(tabla, intervalo_t)
-    print(cliente)
+    tabla = runge_kutta(intervalo_t, coeficiente, termino_independiente)
 
 
-# # Parámetros iniciales
-# T0 = 0
-# P0 = 0
-# H = 0.01
-# num_steps = 100
-# 
-# # Calcula los valores de t y P utilizando Runge-Kutta
-# t_values, P_values = runge_kutta_solver(T0, P0, H, num_steps)
-# 
-# # Imprime los resultados
-# for t, P in zip(t_values, P_values):
-    # print(f"t = {t:.2f}, P = {P:.6f}")
+    for fila in tabla:
+        print(fila)
+
+
+    for i in range(5):
+        cliente = calcular_n(tabla, intervalo_t)
+        print(cliente)

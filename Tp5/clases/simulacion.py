@@ -14,6 +14,19 @@ from .alumno import Alumno
 from .inscripcion import Inscripcion
 from .persona_mantenimiento import PersonaMantenimiento
 from .proceso_mantenimiento import ProcesoMantenimiento
+# from ..runge_kutta import calcular_n
+
+
+# RAMI 2
+import sys
+import os
+
+# Añadir el directorio padre al sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Ahora puedes importar el archivo padre
+from runge_kutta import calcular_n
+
 
 
 def obtener_valores_atributos(objetos):
@@ -23,19 +36,6 @@ def obtener_valores_atributos(objetos):
             if hasattr(obj, atributo):
                 valores_atributos.append(getattr(obj, atributo))
     return valores_atributos
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class Simulacion(Printeable):
@@ -49,13 +49,21 @@ class Simulacion(Printeable):
     #                         "contador_alumnos_llegan", "contador_alumnos_se_van_y_regresan_mas_tarde",
     #                         "porcentaje_alumnos_se_van", "contador_alumnos_atendidos",
     #                         "acumulador_tiempos_espera", "promedio_tiempos_espera"
-    #                         ]         
+    #                         ]
+
+
     
     use_sine = False
 
     alumnos_destruidos = 0
 
-    def __init__(self, id, simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion):
+    @staticmethod
+    def setear_tabla_runge_kutta(tabla_runge):
+        Simulacion.tabla_runge_kutta = tabla_runge
+
+
+    def __init__(self, id, simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a,
+                  demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion, runge_a, runge_b):
         self.id = id
 
         self.media_llegada_alumnos = media_llegada_alumnos
@@ -65,6 +73,8 @@ class Simulacion(Printeable):
         self.demora_mantenimiento_b = demora_mantenimiento_b
         self.fin_regreso_mantenimiento_media = fin_regreso_mantenimiento_media
         self.fin_regreso_mantenimiento_desviacion = fin_regreso_mantenimiento_desviacion
+        self.intervalo_tiempo_traslado = (runge_a, runge_b)
+
 
 
         
@@ -151,7 +161,7 @@ class Simulacion(Printeable):
                 
         
         # self.alumnos_existentes = self.simulacion_anterior.alumnos_existentes 
-        self.alumnos_pendientes_regresar = copy.copy(self.simulacion_anterior.alumnos_pendientes_regresar)
+        self.alumnos_pendientes_regresar = [copy.copy(al) for al in self.simulacion_anterior.alumnos_pendientes_regresar]
 
         self.inscripciones_en_curso = [copy.copy(ins) for ins in self.simulacion_anterior.inscripciones_en_curso]
 
@@ -159,21 +169,29 @@ class Simulacion(Printeable):
 
 
         self.equipos = [copy.copy(eq) for eq in self.simulacion_anterior.equipos]
-        self.persona_mantenimiento: PersonaMantenimiento = copy.copy(self.simulacion_anterior.persona_mantenimiento)
+
+        # self.persona_mantenimiento: PersonaMantenimiento = copy.copy(self.simulacion_anterior.persona_mantenimiento)
+
+        self.persona_mantenimiento: PersonaMantenimiento = PersonaMantenimiento(self.simulacion_anterior.persona_mantenimiento.id)
+        self.persona_mantenimiento.set_estado(self.simulacion_anterior.persona_mantenimiento.estado)
+        self.persona_mantenimiento.set_hora_llegada(self.simulacion_anterior.persona_mantenimiento.hora_llegada)
+        self.persona_mantenimiento.maquinas_restantes = copy.copy(self.simulacion_anterior.persona_mantenimiento.maquinas_restantes)
 
 
 
-        self.se_queda = True
-        self.hora_regreso_de_alumno = self.simulacion_anterior.hora_regreso_de_alumno
 
+        # Evento regreso -> Runge Kutta
 
-        # if self.evento.tipo == "fin_mantenimiento":
-        #     print(self.reloj, self.cola_alumnos.get_longitud_cola(), self.persona_mantenimiento.maquinas_restantes, self.persona_mantenimiento.estado)
-
-        # if self.evento.tipo in ("fin_inscripcion", "llegada_alumno"):
+        
         
 
+        self.rnd_tiempo_traslado = None
+        self.tiempo_traslado = None
+        self.paciencia_alumno = None
+        self.numero_de_alumnos_tolerable_n = None # NIVEL N
+        self.se_queda = None
         
+        self.hora_regreso_de_alumno = None
 
 
         # Llegadas Alumnos
@@ -251,6 +269,11 @@ class Simulacion(Printeable):
     # Mapear fila simulación
     def obtener_vector_fila_new(self):   
 
+        if self.se_queda:
+            self.se_queda = "TRUE"
+        else:
+            self.se_queda = "FALSE"
+
 
         vector_fila =  [
             self.id,
@@ -263,6 +286,10 @@ class Simulacion(Printeable):
             self.rnd_2_llegada_mantenimiento,
             self.tiempo_hasta_proxima_llegada_mantenimiento,
             self.nueva_llegada_mantenimiento,
+            self.rnd_tiempo_traslado,
+            self.tiempo_traslado,
+            self.paciencia_alumno,
+            self.numero_de_alumnos_tolerable_n,
             self.se_queda,
             self.hora_regreso_de_alumno,
             self.rnd_fin_inscripcion,
@@ -283,7 +310,7 @@ class Simulacion(Printeable):
             self.persona_mantenimiento.maquinas_restantes,
         ]
 
-    
+
         for eq in self.equipos:
             eq: Equipo = eq
             vector_fila += [eq.estado, eq.hora_fin_uso]
@@ -292,7 +319,7 @@ class Simulacion(Printeable):
         for al in self.alumnos_existentes:
             al: Alumno = al
             if al is not None:
-                vector_fila += [al.id, al.estado, al.hora_llegada, None]
+                vector_fila += [al.id, al.estado, al.hora_llegada, al.hora_regreso] 
             else:
                 vector_fila += [None] * 4
 
@@ -527,7 +554,15 @@ class Simulacion(Printeable):
         self.agregar_proximo_evento(proximo_evento_fin_regreso_alumno)
 
     def agregar_alumno_pendiente_regresar(self, alumno: Alumno):
-        alumno.set_hora_regreso(self.reloj + 30)
+
+        if alumno.hora_regreso is None:
+
+            alumno.set_hora_regreso(self.reloj + 30)
+            self.hora_regreso_de_alumno = self.reloj + 30
+
+            self.actualizar_contador_alumnos_se_van_regresan_mas_tarde()
+
+
         self.alumnos_pendientes_regresar.append(alumno)
 
     
@@ -569,6 +604,7 @@ class Simulacion(Printeable):
         self.contador_alumnos_atendidos += 1
     
     def actualizar_contador_alumnos_se_van_regresan_mas_tarde(self):
+        
 
         self.contador_alumnos_se_van_y_regresan_mas_tarde += 1
         self.porcentaje_alumnos_se_van = (self.contador_alumnos_se_van_y_regresan_mas_tarde / self.contador_alumnos_llegan) * 100
@@ -589,7 +625,15 @@ class Simulacion(Printeable):
         else:
             self.alumnos_existentes += [alumno]
 
+    
 
+    def realizar_runge_kutta(self):
+        
+        
+        self.rnd_tiempo_traslado, self.tiempo_traslado, \
+        self.paciencia_alumno, self.numero_de_alumnos_tolerable_n = calcular_n(Simulacion.tabla_runge_kutta, self.intervalo_tiempo_traslado)
+        
+        
 
 
     def crear_nuevo_alumno(self, es_nuevo=True):
@@ -602,6 +646,14 @@ class Simulacion(Printeable):
         else:
             # Si es un alumno que regreso de la espera de desocupacion
             nuevo_alumno = self.siguiente_alumno_pendiente_regresar()
+
+            for al in self.alumnos_existentes:
+                if al is not None and al.id == nuevo_alumno.id:
+                    al.set_hora_llegada(self.reloj)
+        
+
+        self.se_queda = True
+        
         
         nuevo_alumno.set_hora_llegada(self.reloj)
 
@@ -622,8 +674,14 @@ class Simulacion(Printeable):
 
                 nuevo_alumno.set_estado("siendo_atendido")
 
+                for al in self.alumnos_existentes:
+                    if al is not None and al.id == nuevo_alumno.id:
+                        al.set_hora_atencion(self.reloj)
+                        al.set_estado("siendo_atendido")
+
                 # Cambiar el estado del equipo ocupado por el alumno
                 equipo.set_estado("ocupado_inscripcion")
+                
 
                 # Se genera el proximo evento de fin de inscripcion
                 self.generar_proximo_fin_inscripcion()
@@ -654,19 +712,27 @@ class Simulacion(Printeable):
 
         
         if not hay_equipo_libre:
-            # Si hay +5 alumnos en la cola  -> Se va y regresa en 30 mins  
-            # 
-            
-            # RUNGE KUTTA PAPAAAA ;)
-            if self.cola_alumnos.get_longitud_cola() >= calcular_n():
+
+
+            # Si no hay un equipo libre, se debe simular la paciencia del alumno y
+            #  la cantidad de alumnos en cola que es capaz de esperar
+
+
+
+            self.realizar_runge_kutta()
+                   
+            if self.cola_alumnos.get_longitud_cola() >= self.numero_de_alumnos_tolerable_n:
                 # El alumno se va y regresa en 30 minutos 
-                self.actualizar_contador_alumnos_se_van_regresan_mas_tarde()
                 
                 # EL alumno de esta iteracion se fue y no espero
                 self.se_queda = False
 
                 # Actualizamos estado
                 nuevo_alumno.set_estado("esperando_desocupacion")
+
+                for al in self.alumnos_existentes:
+                    if al is not None and al.id == nuevo_alumno.id:
+                        al.set_estado("esperando_desocupacion")
                 # Seteamos la hora de regreso del alumno
 
                 # Creamos evento y agregamos a la lista
@@ -674,7 +740,7 @@ class Simulacion(Printeable):
 
                 self.agregar_alumno_pendiente_regresar(nuevo_alumno)
 
-
+                
                 
                 
             
@@ -686,6 +752,9 @@ class Simulacion(Printeable):
 
                 # seteamos el estado a esperando_atencion
                 nuevo_alumno.set_estado("esperando_atencion")
+                for al in self.alumnos_existentes:
+                    if al is not None and al.id == nuevo_alumno.id:
+                        al.set_estado("esperando_atencion")
                 # La hora de atencion se debe setear cuando se atienda efectivamente a ese alumno
 
                 # Agregamos el alumno a la cola
@@ -893,23 +962,41 @@ class Simulacion(Printeable):
             if e.estado == "libre" and e.id not in self.persona_mantenimiento.maquinas_restantes:
                 return True
         return False
+    
+    def hay_equipo_libre_restante(self):
+        for e in self.equipos:
+            e: Equipo = e
+
+            if e.estado == "libre" and e.id in self.persona_mantenimiento.maquinas_restantes:
+                return True
+        
+        return False
 
 
     def comenzar_nuevo_uso_equipo(self):
 
         objeto_atendido = None 
 
-        if self.cola_mantenimiento.get_longitud_cola() != 0 and not self.hay_equipos_libres_ya_mantenidos(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
+        # if self.cola_mantenimiento.get_longitud_cola() != 0 and not self.hay_equipos_libres_ya_mantenidos(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
+        if self.cola_mantenimiento.get_longitud_cola() != 0 and self.hay_equipo_libre_restante(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
             objeto_atendido = self.cola_mantenimiento.proximo_en_cola()
 
             self.iniciar_proceso_mantenimiento()
         
-        else:    # si la cola prioritaria está vacía
-            if self.cola_alumnos.get_longitud_cola() != 0:
+        # else:
+            # si la cola prioritaria está vacía
+        elif self.cola_alumnos.get_longitud_cola() != 0:
+            # if self.cola_alumnos.get_longitud_cola() != 0:
 
-                objeto_atendido = self.cola_alumnos.proximo_en_cola()
-                
-                self.ingresar_alumno_a_equipo(objeto_atendido)
+            objeto_atendido = self.cola_alumnos.proximo_en_cola()
+            
+            self.ingresar_alumno_a_equipo(objeto_atendido)
+
+        # else:
+            # print("PASO ALGO LOCURA")
+            # print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
+            #     self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
+            #     [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
 
                 
         # Si no hay nadie en la cola ni de mantenimiento ni de alumnos, no hace nada, queda en libre el estado del equipo
@@ -1021,11 +1108,11 @@ class Simulacion(Printeable):
 
 
 
-        # if 5 < self.id < 100:
+        if 5 < self.id < 500:
 
-            # print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
-            #     self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
-            #     [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
+            print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
+                self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
+                [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
             # for al in self.alumnos_existentes:
             #     if al is not None:
             #         print(f"({al.estado, al.hora_llegada})", end="-")
@@ -1033,6 +1120,8 @@ class Simulacion(Printeable):
             #         print(None, end="-")
             # print()
             # print([(al.id, al.estado, al.hora_llegada) for al in self.alumnos_existentes if al is not None])
+            # if self.evento.tipo == "llegada_alumno":
+            #     print(self.id, self.evento, round(self.reloj, 4), f"Se queda {self.se_queda} Hora regreso {self.al}")
 
 
 

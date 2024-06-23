@@ -1,6 +1,16 @@
 from .cola import Cola
 from .simulacion import Simulacion
+# from ..runge_kutta import runge_kutta
 import time
+
+import sys, os
+
+# Añadir el directorio padre al sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Ahora puedes importar el archivo padre
+from runge_kutta import runge_kutta
+
 
 
 
@@ -12,20 +22,23 @@ class VectorEstado:
         self.simulaciones = []
         self.prox_id = 1
         self.ultima_simulacion = None
+        self.tabla_runge = None
         # self.proximos_eventos: Cola = None
         # self.cola: Cola = None
         
         # ...
         # Variables estadisticas van aca
     
-    def crear_fila_simulacion(self, simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion):
+    def crear_fila_simulacion(self, simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion, runge_a, runge_b):
 
         # Esto deberia inicializar la simulacion segun los eventos que estan proximos (el proximo)
         # Luego deberia ejecutar efectivamente la simulacion de esa fila, y por ultimo agregarlo a su vector de simulaciones
         
         
         nueva_fila_simulacion = Simulacion(self.prox_id, simulacion_anterior,
-                                           media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion,
+                                           media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, 
+                                           demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion,
+                                           runge_a, runge_b
                                            )
         self.prox_id += 1
         # nueva_fila_simulacion.evento = self.proximos_eventos.proximo_en_cola()
@@ -44,8 +57,17 @@ class VectorEstado:
 
 
     
-    def comenzar_simulacion(self, hora_j, iteraciones_i, x_tiempo_simulacion, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion): 
+    def comenzar_simulacion(self, hora_j, iteraciones_i, x_tiempo_simulacion, media_llegada_alumnos, demora_inscripcion_a, 
+                            demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion,
+                             runge_a, runge_b, coeficiente_runge_kutta, termino_ind_runge_kutta): 
                              
+
+        # Crear tabla del runge
+        self.tabla_runge = runge_kutta((runge_a, runge_b), coeficiente_runge_kutta, termino_ind_runge_kutta)
+        Simulacion.setear_tabla_runge_kutta(self.tabla_runge)
+        
+
+        
         # Se deben guardar las simulaciones (filas) solamente a partir de la hora j y hasta i iteraciones.
         # La ultima tambien 
         
@@ -72,12 +94,12 @@ class VectorEstado:
             if nueva_simulacion is None:
                 
                 # para que el primero sea un incializar
-                nueva_simulacion = self.crear_fila_simulacion(None, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion)
+                nueva_simulacion = self.crear_fila_simulacion(None, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion, runge_a, runge_b)
                 # self.agregar_fila_simulacion(nueva_simulacion)
 
             else:
 
-                nueva_simulacion = self.crear_fila_simulacion(simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion)
+                nueva_simulacion = self.crear_fila_simulacion(simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion, runge_a, runge_b)
 
 
 
@@ -96,7 +118,7 @@ class VectorEstado:
                     primera_iteracion_guardar = iteraciones_totales
                     entro = True
                 
-                if iteraciones_totales <= primera_iteracion_guardar + iteraciones_i:
+                if iteraciones_totales <= primera_iteracion_guardar + iteraciones_i - 1:
 
 
 
@@ -151,9 +173,11 @@ class VectorEstado:
         # uno = ultima_fila_tabla[1]
         # ultima_fila_tabla[0] = uno
         # ultima_fila_tabla[1] = cero
+        # for el in vector_estado_tabla[:7]:
+        #     print(el[:3])
     
 
-        return vector_estado_tabla, ultima_fila_tabla
+        return vector_estado_tabla, ultima_fila_tabla, self.tabla_runge
 
         
 

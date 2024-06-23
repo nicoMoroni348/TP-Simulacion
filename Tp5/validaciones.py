@@ -52,3 +52,20 @@ def validar_media_desviacion(media, desviacion):
         return False
 
     return media, desviacion
+
+
+
+def validar_parametros_tabla(coeficiente, termino_independiente):
+
+    try:
+        coeficiente = float(coeficiente)
+        termino_independiente = float(termino_independiente)
+    except ValueError:
+        return False
+    
+    if coeficiente < 0 or termino_independiente < 0:
+        return False
+
+    return coeficiente, termino_independiente
+
+
