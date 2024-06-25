@@ -109,7 +109,7 @@ class Simulacion(Printeable):
         [self.cola_alumnos.agregar_a_cola(copy.copy(al)) for al in self.simulacion_anterior.cola_alumnos.cola]
 
 
-        self.cola_mantenimiento: Cola = copy.copy(self.simulacion_anterior.cola_mantenimiento)
+        # self.cola_mantenimiento: Cola = copy.copy(self.simulacion_anterior.cola_mantenimiento)
         self.cola_mantenimiento: Cola = Cola()
         [self.cola_mantenimiento.agregar_a_cola(copy.copy(mant)) for mant in self.simulacion_anterior.cola_mantenimiento.cola]
 
@@ -172,10 +172,15 @@ class Simulacion(Printeable):
 
         # self.persona_mantenimiento: PersonaMantenimiento = copy.copy(self.simulacion_anterior.persona_mantenimiento)
 
+        # print(f"\n\n\n {self.simulacion_anterior.persona_mantenimiento.estado}    -   {self.simulacion_anterior.persona_mantenimiento.maquinas_restantes}")
+
         self.persona_mantenimiento: PersonaMantenimiento = PersonaMantenimiento(self.simulacion_anterior.persona_mantenimiento.id)
         self.persona_mantenimiento.set_estado(self.simulacion_anterior.persona_mantenimiento.estado)
         self.persona_mantenimiento.set_hora_llegada(self.simulacion_anterior.persona_mantenimiento.hora_llegada)
         self.persona_mantenimiento.maquinas_restantes = copy.copy(self.simulacion_anterior.persona_mantenimiento.maquinas_restantes)
+
+        # print(f"\n\n\n {self.persona_mantenimiento.estado}    -   {self.persona_mantenimiento.maquinas_restantes}")
+
 
 
 
@@ -271,8 +276,45 @@ class Simulacion(Printeable):
 
         if self.se_queda:
             self.se_queda = "TRUE"
-        else:
+        elif self.se_queda == False:
             self.se_queda = "FALSE"
+        else:
+            self.se_queda = "--"
+
+
+        # print(f"\n\n\n {self.id}  ---- {self.evento.tipo} --- {self.persona_mantenimiento.estado}    - {self.cola_mantenimiento.longitud_cola} -   {self.persona_mantenimiento.maquinas_restantes}  --- {[(e.id, e.estado) for e in self.equipos]}")
+
+        
+        indice_a_actualizar = -1
+
+        # print(f"ANTERIOR - {self.simulacion_anterior.persona_mantenimiento.maquinas_restantes}")
+        # print(f"NEXT - {self.persona_mantenimiento.maquinas_restantes}")
+
+        
+
+        if self.persona_mantenimiento.estado == "esperando_atencion" and self.cola_mantenimiento.longitud_cola in (0, -1):
+
+            
+            
+            # exit()
+            for i, eq in enumerate(self.equipos):
+                # print("\n\n\ENTRO")
+
+                # print(f"{eq.id} --   {eq.esta_libre()}  --  {self.simulacion_anterior.persona_mantenimiento.maquinas_restantes}" )
+                if eq.esta_libre() and eq.id in self.simulacion_anterior.persona_mantenimiento.maquinas_restantes:
+                    # print(f"ENTRO EN EL EQUIPO: {eq.id}")
+                    self.persona_mantenimiento.set_estado("en_mantenimiento")
+                    indice_a_actualizar = eq.id
+                    break
+                    
+
+        if indice_a_actualizar != -1:
+            self.equipos[indice_a_actualizar-1].set_estado("ocupado_mantenimiento")
+                    
+        
+        # [1, 2, 3, 4, 5, 6] -> desocupado
+        # llegada mantenimiento [2, 3, 4, 5, 6] -> esperando_atención
+        
 
 
         vector_fila =  [
@@ -791,13 +833,20 @@ class Simulacion(Printeable):
                 self.generar_proximo_fin_mantenimiento()
 
                 # actualizar estado equipo
+                # print(equipo.estado)
                 equipo.set_estado("ocupado_mantenimiento")
+                # print(equipo.estado)
+                # exit()
                 
                 # Actualizar estado de persona de mantenimiento
                 self.persona_mantenimiento.set_estado('en_mantenimiento')
 
                 # Como inicia un proceso de mantenimiento, quita el equipo de su lista de equipos pendientes a mantener
+
                 self.persona_mantenimiento.quitar_equipo_mantenido(equipo.id)
+
+
+
                 
                 # Crear objeto de proceso de mantenimiento
                 proceso_mantenimiento = ProcesoMantenimiento(ProcesoMantenimiento.get_proximo_id())
@@ -864,7 +913,16 @@ class Simulacion(Printeable):
 
 
         self.iniciar_proceso_mantenimiento()
+
+        # print(f" ANTES DEL 2do COMIENZO de nuevo uso equipo: {self.persona_mantenimiento.estado}")
+        # print(f" ANTES DEL 2do COMIENZO de nuevo uso equipo: {self.persona_mantenimiento.maquinas_restantes}")
+
         self.comenzar_nuevo_uso_equipo()
+
+        # print(f" Despues DEL 2do COMIENZO de nuevo uso equipo: {self.persona_mantenimiento.estado}")
+        # print(f" Despues DEL 2do COMIENZO de nuevo uso equipo: {self.persona_mantenimiento.maquinas_restantes}")
+
+
 
 
         # if self.cola_alumnos.get_longitud_cola() != 0:
@@ -978,7 +1036,7 @@ class Simulacion(Printeable):
         objeto_atendido = None 
 
         # if self.cola_mantenimiento.get_longitud_cola() != 0 and not self.hay_equipos_libres_ya_mantenidos(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
-        if self.cola_mantenimiento.get_longitud_cola() != 0 and self.hay_equipo_libre_restante(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
+        if self.cola_mantenimiento.get_longitud_cola() > 0 and self.hay_equipo_libre_restante(): # y que si hay un equipo libre y no está en la lista de equipos restantes del mantenimiento 
             objeto_atendido = self.cola_mantenimiento.proximo_en_cola()
 
             self.iniciar_proceso_mantenimiento()
@@ -1108,11 +1166,16 @@ class Simulacion(Printeable):
 
 
 
-        if 5 < self.id < 500:
 
-            print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
-                self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
-                [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
+
+        # if 5 < self.id < 500:
+
+        #     print(self.id, self.evento.tipo, self.reloj, self.rnd_llegada_alumno, self.rnd_fin_inscripcion, self.rnd_1_llegada_mantenimiento, self.rnd_fin_mantenimiento, 
+        #         self.cola_alumnos.get_longitud_cola(), self.cola_mantenimiento.get_longitud_cola(), 
+        #         [e.estado for e in self.equipos], self.persona_mantenimiento.maquinas_restantes)
+
+
+
             # for al in self.alumnos_existentes:
             #     if al is not None:
             #         print(f"({al.estado, al.hora_llegada})", end="-")

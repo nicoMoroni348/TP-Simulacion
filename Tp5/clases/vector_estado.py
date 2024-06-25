@@ -11,6 +11,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Ahora puedes importar el archivo padre
 from runge_kutta import runge_kutta
 
+import copy
+
 
 
 
@@ -44,8 +46,13 @@ class VectorEstado:
         # nueva_fila_simulacion.evento = self.proximos_eventos.proximo_en_cola()
 
         # Ejecutar la simulacion
+
+
+
+        
         nueva_fila_simulacion.realizar_simulacion()
 
+        print(f"\n\n\n Antes -  {nueva_fila_simulacion.id}  --- {nueva_fila_simulacion.persona_mantenimiento.estado}    -   {nueva_fila_simulacion.persona_mantenimiento.maquinas_restantes}")
 
 
 
@@ -102,6 +109,9 @@ class VectorEstado:
                 nueva_simulacion = self.crear_fila_simulacion(simulacion_anterior, media_llegada_alumnos, demora_inscripcion_a, demora_inscripcion_b, demora_mantenimiento_a, demora_mantenimiento_b, fin_regreso_mantenimiento_media, fin_regreso_mantenimiento_desviacion, runge_a, runge_b)
 
 
+                
+
+
 
 
             if tiempo_actual >= contador:
@@ -124,6 +134,7 @@ class VectorEstado:
 
       
                     self.agregar_fila_simulacion(nueva_simulacion)
+
                     # print(f"Fila guardada en iteracion {iteraciones_totales} Tiempo {tiempo_actual}")
 
 
@@ -136,7 +147,12 @@ class VectorEstado:
 
 
 
-        self.ultima_simulacion = nueva_simulacion
+        # self.ultima_simulacion = nueva_simulacion
+        self.ultima_simulacion = copy.copy(nueva_simulacion)
+
+
+        # print(f"\n\n\n Despues -  {nueva_simulacion.id}  --- {nueva_simulacion.persona_mantenimiento.estado}    -   {nueva_simulacion.persona_mantenimiento.maquinas_restantes}")
+
 
         print(f"Iteraciones Totales realizadas: {iteraciones_totales}")
     
@@ -155,7 +171,13 @@ class VectorEstado:
             # if 0 < fila.id <= 15:
             #     print(f"id: {fila.id} Long cola {fila.cola_alumnos.get_longitud_cola()}")
 
+            # print(f"\n\n\n ANTES -  {fila.id}  --- {fila.persona_mantenimiento.estado}    -   {fila.persona_mantenimiento.maquinas_restantes}")
+
+
             vector_fila = fila.obtener_vector_fila_new()
+
+            # print(f"\n\n\n Despues -  {fila.id}  --- {fila.persona_mantenimiento.estado}    -   {fila.persona_mantenimiento.maquinas_restantes}")
+
         
 
             # cero = vector_fila[0]

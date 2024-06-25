@@ -202,13 +202,13 @@ def main(page: ft.Page):
 
     
     # Input parámetros simulación
-    tiempo_input = ft.TextField(height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    tiempo_input = ft.TextField(value=1000, height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     tiempo_simulacion_input = [ft.Text("Tiempo a simular (x):", color=ft.colors.BLACK, size=15, weight=ft.FontWeight.BOLD),
                                tiempo_input,
                                ft.Text("minutos", color=ft.colors.BLACK)]
 
-    i_input = ft.TextField(label="i =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
-    j_input = ft.TextField(label="j =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    i_input = ft.TextField(value=100, label="i =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
+    j_input = ft.TextField(value=50.0, label="j =", label_style=ft.TextStyle(color=ft.colors.GREY_500), height= 50, width=80, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER, text_vertical_align=ft.VerticalAlignment.CENTER)
     i_j_input = [ft.Text("Mostrar", color=ft.colors.BLACK),
                  i_input,
                  ft.Text("iteraciones a partir del minuto", color=ft.colors.BLACK),

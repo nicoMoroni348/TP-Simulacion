@@ -63,9 +63,9 @@ def calcular_n(tabla_runge_kutta, intervalo_t):
     
     
     for fila in tabla_runge_kutta: 
-        print(f"t_final: {t_final}  -   t_runge: {fila[0]}")
+        # print(f"t_final: {t_final}  -   t_runge: {fila[0]}")
         if fila[0] >= t_final:
-            print("ENTRO")
+            # print("ENTRO")
             p_final = fila[1] # Guarda la paciencia correspondiente al tiempo objetivo
             break
     
